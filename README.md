@@ -19,7 +19,7 @@ That Sinking Feeling is a vertical platform jumping game where the player has to
 
 ## Technologies, Libraries, APIs
 
-TSF will be implemented in JavaScript using Canvas and EaselJS library.
+TSF will be implemented in JavaScript using Canvas and possibly the EaselJS library.
 
 I anticipate implementing the following will present challenges:
 
