@@ -63,3 +63,4 @@ If time allows I will include a high score table that utilizes a database to all
 - Implement player score and database backend
 - Implement starting splash screen and game over screen
 - Include nicer looking sprites for player, platforms and a scrolling image for the background
+- Implement varying levels of difficulty that will adjust the speed of water level rise and spacing and frequency of platforms
