@@ -33,6 +33,7 @@ I anticipate implementing the following will present challenges:
 
 ## Wireframes
 
+![alt text](https://github.com/jpshugrue/That-Sinking-Feeling/blob/master/images/BasicTemplate.png "Basic Wireframe")
 
 ## Backend
 
