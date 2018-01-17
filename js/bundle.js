@@ -110,8 +110,9 @@ class Game {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tile__ = __webpack_require__(6);
-// import Player from './player';
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tile__ = __webpack_require__(6);
+
 
 
 class Board {
@@ -127,16 +128,7 @@ class Board {
     this.GRAVITY = 100;
 
     this.map = this.generateMap();
-    this.player = {
-      x: 100,
-      xVel: 0,
-      y: 200,
-      yVel: 0,
-      size: this.TILE_SIZE,
-      left: false,
-      right: false,
-      jump: false
-    };
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100,200], this.TILE_SIZE);
     // this.player = new Player([100, 200], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
@@ -160,17 +152,76 @@ class Board {
   update(timeDiff) {
     if (this.player.left) {
       this.player.xVel = (this.player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
+      this.checkForCollisions();
       if (this.player.xVel > this.MAX_HORIZONTAL_VEL) { this.player.xVel = this.MAX_HORIZONTAL_VEL; }
       this.player.x += this.player.xVel;
     }
     if (this.player.right) {
       this.player.xVel = (this.player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
+      this.checkForCollisions();
       if (Math.abs(this.player.xVel) > this.MAX_HORIZONTAL_VEL) { this.player.xVel = -(this.MAX_HORIZONTAL_VEL); }
       this.player.x += this.player.xVel;
     }
     if (this.player.jump) {
       this.player.y -= this.MAX_VERTICAL_VEL * timeDiff;
     }
+
+    this.handleFriction(timeDiff);
+    // this.handleGravity(timeDiff);
+  }
+
+  getTilePos(x, y) {
+    const column = Math.floor(x / this.TILE_SIZE);
+    const row = Math.floor(y / this.TILE_SIZE);
+    return [column, row];
+  }
+
+  checkForCollisions() {
+    // debugger
+    let nextX = this.player.x + this.player.xVel;
+    let tilePos = this.getTilePos(nextX, this.player.y);
+    if (this.player.xVel < 0) {
+      if (this.player.x % this.TILE_SIZE === 0) {
+        if (this.map[tilePos[0]][tilePos[1]].collides) {
+          // debugger
+          this.player.xVel = 0;
+
+        }
+      } else {
+        if (this.map[tilePos[0]][tilePos[1]].collides || this.map[tilePos[0]+1][tilePos[1]].collides) {
+          // debugger
+          this.player.xVel = 0;
+        }
+      }
+
+    }
+
+    // if (this.player.xVel !== 0) {
+    //   const nextPos = this.player.x + this.player.xVel;
+    //   const tilePos = this.getTilePos(nextPos);
+    //   const nextTiles = [];
+    //   if (this.player.x % this.TILE_SIZE === 0) {
+    //
+    //   }
+    // }
+    // if (this.player.yVel !== 0) {
+    //
+    // }
+
+    // let column, row;
+    // [column, row] = this.player.getTilePos();
+    // if (this.map[row][column].inCollision(this.player) && this.map[row][column].collides
+    //    || this.map[row][column+1].collides ||
+    //   this.map[row+1][column].collides || this.map[row+1][column+1].collides) {
+    //   if (direction === "horizontal") ? this.player.xVel
+    // }
+  }
+  //
+  // handleGravity(timeDiff) {
+  //
+  // }
+
+  handleFriction(timeDiff) {
     if (this.player.xVel > 0) {
       this.player.xVel -= this.FRICTION * timeDiff;
       if (this.player.xVel < 0) { this.player.xVel = 0; }
@@ -178,10 +229,6 @@ class Board {
       this.player.xVel += this.FRICTION * timeDiff;
       if (this.player.xVel > 0) { this.player.xVel = 0; }
     }
-    console.log("x val is "+this.player.x);
-    console.log("xVel is "+this.player.xVel);
-    console.log("y val is "+this.player.y);
-    console.log("yVel is "+this.player.yVal);
   }
 
   keyPress(event, pressed) {
@@ -203,9 +250,10 @@ class Board {
     for(let i = 0; i < 50; i++) {
       map.push([]);
       for(let j = 0; j < 50; j++) {
-        map[i][j] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
+        map[i][j] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
       }
     }
+    map[3][3] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([30,30], true, 10, "green");
     return map;
   }
 
@@ -225,7 +273,35 @@ class Board {
 
 
 /***/ }),
-/* 5 */,
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Player {
+
+  constructor(startingPos, size) {
+    this.x = startingPos[0];
+    this.y = startingPos[1];
+    this.xVel = 0;
+    this.yVel = 0;
+    this.size = size;
+    this.left = false;
+    this.right = false;
+    this.jump = false;
+  }
+
+  getTilePos() {
+    const column = Math.floor(this.x / this.size);
+    const row = Math.floor(this.y / this.size);
+    return [column, row];
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Player);
+
+
+/***/ }),
 /* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
