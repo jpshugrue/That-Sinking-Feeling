@@ -65,28 +65,111 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game__ = __webpack_require__(1);
+
 
 $(() => {
-  const canvas = document.getElementById('gameCanvas');
-  const context = canvas.getContext('2d');
-  const board = new Board(context);
+  const game = new __WEBPACK_IMPORTED_MODULE_0__game__["a" /* default */]();
+  game.start();
 });
 
 
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-class Player {
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__board__ = __webpack_require__(4);
+
+
+class Game {
+
+  constructor() {
+    const canvas = document.getElementById('gameCanvas');
+    this.context = canvas.getContext('2d');
+  }
+
+  start() {
+    const board = new __WEBPACK_IMPORTED_MODULE_0__board__["a" /* default */](this.context);
+    board.main();
+  }
 
 }
+
+/* harmony default export */ __webpack_exports__["a"] = (Game);
+
+
+/***/ }),
+/* 2 */,
+/* 3 */,
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tile__ = __webpack_require__(6);
+
+
 
 class Board {
 
   constructor(context) {
+    this.context = context;
+
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
+    this.MAX_HORIZONTAL_VEL = 20;
+    this.MAX_VERTICAL_VEL = 50;
 
     this.map = this.generateMap();
-    this.render(context);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100, 200], this.TILE_SIZE);
+
+    document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
+    document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
+
+    this.now = Date.now();
+
+    this.main = this.main.bind(this);
+    this.main();
+  }
+
+  main() {
+    let then = this.now;
+    this.now = Date.now();
+    let timeDiff = (this.now - then) / 1000.0;
+    this.update(timeDiff);
+    this.render();
+    window.requestAnimationFrame(this.main);
+  }
+
+  update(timeDiff) {
+    if (this.player.left) {
+      this.player.x -= this.MAX_HORIZONTAL_VEL * timeDiff;
+    }
+    if (this.player.right) {
+      this.player.x += this.MAX_HORIZONTAL_VEL * timeDiff;
+    }
+    if (this.player.jump) {
+      this.player.y -= this.MAX_VERTICAL_VEL * timeDiff;
+    }
+  }
+
+  keyPress(event, pressed) {
+    switch(event.key) {
+      case "ArrowLeft":
+        this.player.left = pressed;
+        break;
+      case "ArrowRight":
+        this.player.right = pressed;
+        break;
+      case " ":
+        event.preventDefault();
+        this.player.jump = pressed;
+    }
   }
 
   generateMap() {
@@ -94,26 +177,53 @@ class Board {
     for(let i = 0; i < 50; i++) {
       map.push([]);
       for(let j = 0; j < 50; j++) {
-        map[i][j] = new Tile([i*10, j*10], false, 10, "blue");
+        map[i][j] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
       }
     }
     return map;
   }
 
-  render(context) {
-    for(let i = 0; i < 50; i++) {
-      for(let j = 0; j < 50; j++) {
-        context.fillStyle = this.map[i, j];
-        context.fillRect(i * 10, j * 10, 10, 10);
-      }
-    }
-    // render player
-    context.fillStyle = "yellow";
-    context.fillRect(100, 100, 10, 10);
+  render() {
+    this.map.forEach((row, vertical) => {
+      row.forEach((tile, horizontal) => {
+        this.context.fillStyle = tile.color;
+        this.context.fillRect(horizontal * this.TILE_SIZE, vertical * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
+      });
+    });
+    this.context.fillStyle = "yellow";
+    this.context.fillRect(this.player.x, this.player.y, this.TILE_SIZE, this.TILE_SIZE);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Board);
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Player {
+
+  constructor(startingPos, size) {
+    this.x = startingPos[0];
+    this.y = startingPos[1];
+    this.size = size;
+    this.left = false;
+    this.right = false;
+    this.jump = false;
   }
 
 }
 
+/* harmony default export */ __webpack_exports__["a"] = (Player);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 class Tile {
 
   constructor(position, collides, size, color) {
@@ -130,6 +240,8 @@ class Tile {
   }
 
 }
+
+/* harmony default export */ __webpack_exports__["a"] = (Tile);
 
 
 /***/ })
