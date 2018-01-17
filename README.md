@@ -5,7 +5,7 @@ That Sinking Feeling is a vertical platform jumping game where the player has to
 
 - Hosting of the program using GitHub Pages
 
-- Display of game world using Canvas
+- Display of game world using Canvas and the EaselJS library
 
 - Keyboard control of the player which has a concept of gravity and the ability to jump
 
