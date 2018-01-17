@@ -177,8 +177,9 @@ class Board {
   }
 
   checkForCollisions() {
-    let nextX = this.player.x + this.player.xVel;
-    let tilePos = this.getTilePos(nextX, this.player.y);
+    const nextX = this.player.x + this.player.xVel;
+    const nextY = this.player.y + this.player.yVel;
+    let tilePos = this.getTilePos(nextX, nextY);
     if (this.player.xVel < 0) {
       if (this.player.x % this.TILE_SIZE === 0 && this.map[tilePos[0]][tilePos[1]].collides) {
         this.player.xVel = 0;
@@ -187,32 +188,18 @@ class Board {
         this.player.xVel = 0;
         this.player.x = this.map[tilePos[0]][tilePos[1]].x + this.TILE_SIZE;
       }
+    } else if (this.player.xVel > 0) {
+      if (this.player.x % this.TILE_SIZE === 0 && this.map[tilePos[0]+1][tilePos[1]].collides) {
+        this.player.xVel = 0;
+        this.player.x = this.map[tilePos[0]+1][tilePos[1]].x - this.TILE_SIZE;
+      } else if (this.map[tilePos[0]+1][tilePos[1]].collides || this.map[tilePos[0]+1][tilePos[1]+1].collides) {
+        this.player.xVel = 0;
+        this.player.x = this.map[tilePos[0]+1][tilePos[1]].x - this.TILE_SIZE;
+      }
     }
 
-    // if (this.player.xVel !== 0) {
-    //   const nextPos = this.player.x + this.player.xVel;
-    //   const tilePos = this.getTilePos(nextPos);
-    //   const nextTiles = [];
-    //   if (this.player.x % this.TILE_SIZE === 0) {
-    //
-    //   }
-    // }
-    // if (this.player.yVel !== 0) {
-    //
-    // }
-
-    // let column, row;
-    // [column, row] = this.player.getTilePos();
-    // if (this.map[row][column].inCollision(this.player) && this.map[row][column].collides
-    //    || this.map[row][column+1].collides ||
-    //   this.map[row+1][column].collides || this.map[row+1][column+1].collides) {
-    //   if (direction === "horizontal") ? this.player.xVel
-    // }
   }
-  //
-  // handleGravity(timeDiff) {
-  //
-  // }
+
 
   handleFriction(timeDiff) {
     if (this.player.xVel > 0) {
@@ -246,7 +233,7 @@ class Board {
         map[i][j] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
       }
     }
-    map[3][3] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([30,30], true, 10, "green");
+    map[10][10] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([100,100], true, 10, "green");
     return map;
   }
 
