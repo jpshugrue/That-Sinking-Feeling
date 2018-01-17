@@ -110,9 +110,8 @@ class Game {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tile__ = __webpack_require__(6);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tile__ = __webpack_require__(6);
+// import Player from './player';
 
 
 class Board {
@@ -124,9 +123,21 @@ class Board {
     this.BOARD_DIM = 500;
     this.MAX_HORIZONTAL_VEL = 20;
     this.MAX_VERTICAL_VEL = 50;
+    this.FRICTION = 10;
+    this.GRAVITY = 100;
 
     this.map = this.generateMap();
-    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100, 200], this.TILE_SIZE);
+    this.player = {
+      x: 100,
+      xVel: 0,
+      y: 200,
+      yVel: 0,
+      size: this.TILE_SIZE,
+      left: false,
+      right: false,
+      jump: false
+    };
+    // this.player = new Player([100, 200], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -148,14 +159,29 @@ class Board {
 
   update(timeDiff) {
     if (this.player.left) {
-      this.player.x -= this.MAX_HORIZONTAL_VEL * timeDiff;
+      this.player.xVel = (this.player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (this.player.xVel > this.MAX_HORIZONTAL_VEL) { this.player.xVel = this.MAX_HORIZONTAL_VEL; }
+      this.player.x += this.player.xVel;
     }
     if (this.player.right) {
-      this.player.x += this.MAX_HORIZONTAL_VEL * timeDiff;
+      this.player.xVel = (this.player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (Math.abs(this.player.xVel) > this.MAX_HORIZONTAL_VEL) { this.player.xVel = -(this.MAX_HORIZONTAL_VEL); }
+      this.player.x += this.player.xVel;
     }
     if (this.player.jump) {
       this.player.y -= this.MAX_VERTICAL_VEL * timeDiff;
     }
+    if (this.player.xVel > 0) {
+      this.player.xVel -= this.FRICTION * timeDiff;
+      if (this.player.xVel < 0) { this.player.xVel = 0; }
+    } else if (this.player.xVel < 0) {
+      this.player.xVel += this.FRICTION * timeDiff;
+      if (this.player.xVel > 0) { this.player.xVel = 0; }
+    }
+    console.log("x val is "+this.player.x);
+    console.log("xVel is "+this.player.xVel);
+    console.log("y val is "+this.player.y);
+    console.log("yVel is "+this.player.yVal);
   }
 
   keyPress(event, pressed) {
@@ -177,7 +203,7 @@ class Board {
     for(let i = 0; i < 50; i++) {
       map.push([]);
       for(let j = 0; j < 50; j++) {
-        map[i][j] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
+        map[i][j] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i*10, j*10], false, 10, "blue");
       }
     }
     return map;
@@ -199,27 +225,7 @@ class Board {
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Player {
-
-  constructor(startingPos, size) {
-    this.x = startingPos[0];
-    this.y = startingPos[1];
-    this.size = size;
-    this.left = false;
-    this.right = false;
-    this.jump = false;
-  }
-
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Player);
-
-
-/***/ }),
+/* 5 */,
 /* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 

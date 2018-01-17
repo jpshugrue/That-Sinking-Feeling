@@ -1,4 +1,4 @@
-import Player from './player';
+// import Player from './player';
 import Tile from './tile';
 
 class Board {
@@ -10,9 +10,21 @@ class Board {
     this.BOARD_DIM = 500;
     this.MAX_HORIZONTAL_VEL = 20;
     this.MAX_VERTICAL_VEL = 50;
+    this.FRICTION = 10;
+    this.GRAVITY = 100;
 
     this.map = this.generateMap();
-    this.player = new Player([100, 200], this.TILE_SIZE);
+    this.player = {
+      x: 100,
+      xVel: 0,
+      y: 200,
+      yVel: 0,
+      size: this.TILE_SIZE,
+      left: false,
+      right: false,
+      jump: false
+    };
+    // this.player = new Player([100, 200], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -34,14 +46,29 @@ class Board {
 
   update(timeDiff) {
     if (this.player.left) {
-      this.player.x -= this.MAX_HORIZONTAL_VEL * timeDiff;
+      this.player.xVel = (this.player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (this.player.xVel > this.MAX_HORIZONTAL_VEL) { this.player.xVel = this.MAX_HORIZONTAL_VEL; }
+      this.player.x += this.player.xVel;
     }
     if (this.player.right) {
-      this.player.x += this.MAX_HORIZONTAL_VEL * timeDiff;
+      this.player.xVel = (this.player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (Math.abs(this.player.xVel) > this.MAX_HORIZONTAL_VEL) { this.player.xVel = -(this.MAX_HORIZONTAL_VEL); }
+      this.player.x += this.player.xVel;
     }
     if (this.player.jump) {
       this.player.y -= this.MAX_VERTICAL_VEL * timeDiff;
     }
+    if (this.player.xVel > 0) {
+      this.player.xVel -= this.FRICTION * timeDiff;
+      if (this.player.xVel < 0) { this.player.xVel = 0; }
+    } else if (this.player.xVel < 0) {
+      this.player.xVel += this.FRICTION * timeDiff;
+      if (this.player.xVel > 0) { this.player.xVel = 0; }
+    }
+    console.log("x val is "+this.player.x);
+    console.log("xVel is "+this.player.xVel);
+    console.log("y val is "+this.player.y);
+    console.log("yVel is "+this.player.yVal);
   }
 
   keyPress(event, pressed) {
