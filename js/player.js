@@ -11,11 +11,7 @@ class Player {
     this.jump = false;
   }
 
-  getTilePos() {
-    const column = Math.floor(this.x / this.size);
-    const row = Math.floor(this.y / this.size);
-    return [column, row];
-  }
+
 
 }
 

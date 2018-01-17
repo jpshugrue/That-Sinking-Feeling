@@ -177,23 +177,16 @@ class Board {
   }
 
   checkForCollisions() {
-    // debugger
     let nextX = this.player.x + this.player.xVel;
     let tilePos = this.getTilePos(nextX, this.player.y);
     if (this.player.xVel < 0) {
-      if (this.player.x % this.TILE_SIZE === 0) {
-        if (this.map[tilePos[0]][tilePos[1]].collides) {
-          // debugger
-          this.player.xVel = 0;
-
-        }
-      } else {
-        if (this.map[tilePos[0]][tilePos[1]].collides || this.map[tilePos[0]+1][tilePos[1]].collides) {
-          // debugger
-          this.player.xVel = 0;
-        }
+      if (this.player.x % this.TILE_SIZE === 0 && this.map[tilePos[0]][tilePos[1]].collides) {
+        this.player.xVel = 0;
+        this.player.x = this.map[tilePos[0]][tilePos[1]].x + this.TILE_SIZE;
+      } else if (this.map[tilePos[0]][tilePos[1]].collides || this.map[tilePos[0]][tilePos[1]+1].collides) {
+        this.player.xVel = 0;
+        this.player.x = this.map[tilePos[0]][tilePos[1]].x + this.TILE_SIZE;
       }
-
     }
 
     // if (this.player.xVel !== 0) {
@@ -290,11 +283,7 @@ class Player {
     this.jump = false;
   }
 
-  getTilePos() {
-    const column = Math.floor(this.x / this.size);
-    const row = Math.floor(this.y / this.size);
-    return [column, row];
-  }
+
 
 }
 
