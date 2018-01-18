@@ -8,6 +8,7 @@ class Map {
     this.context = context;
     this.map = [];
     this.rowsWoPlatform = 0;
+    this.numTiles = this.boardDim / this.tileSize;
   }
 
   tile(row, col) {
@@ -29,18 +30,17 @@ class Map {
 
   generateRow() {
     let newRow = [];
-    const numTiles = this.boardDim / this.tileSize;
     let platform, platformPos;
     if (this.rowsWoPlatform > 4 || Math.random() < 0.2) {
       platform = this.generatePlatform();
-      platformPos = Math.floor(Math.random() * numTiles) - platform.length;
+      platformPos = Math.floor(Math.random() * (this.numTiles - platform.length));
       // This way may result in left biased placement of platforms
       if (platformPos < 0) { platformPos = 0; }
       this.rowsWoPlatform = 0;
     } else {
       this.rowsWoPlatform += 1;
     }
-    for(let i = 0; i < numTiles; i++) {
+    for(let i = 0; i < this.numTiles; i++) {
       newRow.push(new Tile([i * this.tileSize, 0], false, this.tileSize, "blue"));
     }
     if (platform) {
@@ -49,6 +49,7 @@ class Map {
         newRow[platformPos + i] = platform[i];
       }
     }
+    return newRow;
   }
 
   generatePlatform() {
@@ -69,21 +70,29 @@ class Map {
   }
 
   generateMap(boardDim, tileSize) {
-    const numTiles = this.boardDim / this.tileSize;
     this.map = [];
-    for(let i = 0; i < numTiles; i++) {
-      this.map.push([]);
-      for(let j = 0; j < numTiles; j++) {
-        if (j === 0 || j === numTiles-1) {
-          this.map[i].push(new Tile([j*this.tileSize, i*this.tileSize], true, this.tileSize, "red"));
-        } else {
-          this.map[i].push(new Tile([j*this.tileSize, i*this.tileSize], false, this.tileSize, "blue"));
-        }
-      }
+    for(let i = 0; i < this.numTiles; i++) {
+      this.map.push(this.generateRow());
+      this.map[i].forEach((tile) => {
+        tile.y = i*this.tileSize;
+      });
     }
+    // const numTiles = this.boardDim / this.tileSize;
+    // this.map = [];
+    // for(let i = 0; i < numTiles; i++) {
+    //   this.map.push([]);
+    //   for(let j = 0; j < numTiles; j++) {
+    //     if (j === 0 || j === numTiles-1) {
+    //       this.map[i].push(new Tile([j*this.tileSize, i*this.tileSize], true, this.tileSize, "red"));
+    //     } else {
+    //       this.map[i].push(new Tile([j*this.tileSize, i*this.tileSize], false, this.tileSize, "blue"));
+    //     }
+    //   }
+    // }
+    this.map[25][25] = new Tile([250,250], false, 10, "blue");
     this.map[26][25] = new Tile([250,260], true, 10, "green");
-    this.map[19][26] = new Tile([260,190], true, 10, "green");
-    this.map[26][5] = new Tile([50,260], true, 10, "green");
+    // this.map[19][26] = new Tile([260,190], true, 10, "green");
+    // this.map[26][5] = new Tile([50,260], true, 10, "green");
     // this.map[22][10] = new Tile([100,220], true, 10, "green");
     // this.map[22][11] = new Tile([110,220], true, 10, "green");
     // this.map[21][6] = new Tile([60,210], true, 10, "green");
