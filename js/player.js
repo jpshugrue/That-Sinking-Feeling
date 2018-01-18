@@ -10,6 +10,11 @@ class Player {
     this.right = false;
     this.jump = false;
   }
+
+  render(context) {
+    context.fillStyle = "black";
+    context.fillRect(this.x, this.y, this.size, this.size);
+  }
 }
 
 export default Player;

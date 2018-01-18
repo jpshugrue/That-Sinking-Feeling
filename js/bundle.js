@@ -74,7 +74,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 $(() => {
   const game = new __WEBPACK_IMPORTED_MODULE_0__game__["a" /* default */]();
-  game.start();
+  game.main();
 });
 
 
@@ -83,7 +83,9 @@ $(() => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__board__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__map__ = __webpack_require__(4);
+
 
 
 class Game {
@@ -91,47 +93,20 @@ class Game {
   constructor() {
     const canvas = document.getElementById('gameCanvas');
     this.context = canvas.getContext('2d');
-    // this.context.translate(0, canvas.height);
-    // this.context.scale(1, -1);
-  }
-
-  start() {
-    const board = new __WEBPACK_IMPORTED_MODULE_0__board__["a" /* default */](this.context);
-    board.main();
-  }
-
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Game);
-
-
-/***/ }),
-/* 2 */,
-/* 3 */,
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tile__ = __webpack_require__(6);
-
-
-
-class Board {
-
-  constructor(context) {
-    this.context = context;
 
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
     this.MAX_HORIZONTAL_VEL = 20;
-    this.MAX_VERTICAL_VEL = -3;
+    this.MAX_JUMP_VEL = -3;
+    this.MAX_FALL_VEL = 7;
     this.FRICTION = 10;
-    this.GRAVITY = 3;
+    this.GRAVITY = 5;
 
     this.gameOver = false;
 
-    this.map = this.generateMap();
+    this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */];
+    this.map.generateMap();
+
     this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100,200], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
@@ -140,7 +115,6 @@ class Board {
     this.now = Date.now();
 
     this.main = this.main.bind(this);
-    this.main();
   }
 
   main() {
@@ -151,7 +125,10 @@ class Board {
       this.endGame();
     } else {
       this.update(timeDiff, this.player, this.map);
-      this.render();
+
+      this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
+      this.map.render(this.context);
+      this.player.render(this.context);
     }
 
     window.requestAnimationFrame(this.main);
@@ -164,15 +141,17 @@ class Board {
 
   update(timeDiff, player, map) {
     if (player.left) {
+      if (player.xVel > 0 ) { player.xVel = 0; }
       player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
       if (Math.abs(player.xVel) > this.MAX_HORIZONTAL_VEL) { player.xVel = -(this.MAX_HORIZONTAL_VEL); }
     }
     if (player.right) {
+      if (player.xVel < 0 ) { player.xVel = 0; }
       player.xVel = (player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
       if (player.xVel > this.MAX_HORIZONTAL_VEL) { player.xVel = this.MAX_HORIZONTAL_VEL; }
     }
     if (player.jump) {
-      if (player.yVel === 0) { player.yVel = this.MAX_VERTICAL_VEL; }
+      if (player.yVel === 0) { player.yVel = this.MAX_JUMP_VEL; }
     }
     this.checkForBoundaries(player);
     if (!this.gameOver) {
@@ -212,30 +191,30 @@ class Board {
       player.y = 0;
     }
     if (player.xVel < 0) {
-      if ((nextY % this.TILE_SIZE < 1 && map[nextRow][nextCol].collides) ||
-        (nextY % this.TILE_SIZE >= 1 && (map[nextRow][nextCol].collides || map[nextRow+1][nextCol].collides))) {
+      if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
+        (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow+1, nextCol).collides))) {
           player.xVel = 0;
-          player.x = map[nextRow][nextCol].x + this.TILE_SIZE;
+          player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
           nextCol += 1;
       }
     } else if (player.xVel > 0) {
-      if ((nextY % this.TILE_SIZE < 1 && map[nextRow][nextCol+1].collides) ||
-        (nextY % this.TILE_SIZE >= 1 && (map[nextRow][nextCol+1].collides || map[nextRow+1][nextCol+1].collides))) {
+      if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol+1).collides) ||
+        (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol+1).collides || map.tile(nextRow+1, nextCol+1).collides))) {
           player.xVel = 0;
-          player.x = map[nextRow][nextCol+1].x - this.TILE_SIZE;
+          player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
       }
     }
     if (player.yVel < 0) {
-      if ((player.x % this.TILE_SIZE < 1 && map[nextRow][nextCol].collides) ||
-        (player.x % this.TILE_SIZE >= 1 && (map[nextRow][nextCol].collides || map[nextRow][nextCol+1].collides))) {
+      if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
+        (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow, nextCol+1).collides))) {
           player.yVel = 0;
-          player.y = map[nextRow][nextCol].y + this.TILE_SIZE;
+          player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
       }
     } else if (player.yVel > 0) {
-      if ((player.x % this.TILE_SIZE < 1 && map[nextRow+1][nextCol].collides) ||
-        (player.x % this.TILE_SIZE >= 1 && (map[nextRow+1][nextCol].collides || map[nextRow+1][nextCol+1].collides))) {
+      if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow+1, nextCol).collides) ||
+        (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow+1, nextCol).collides || map.tile(nextRow+1, nextCol+1).collides))) {
           player.yVel = 0;
-          player.y = map[nextRow+1][nextCol].y - this.TILE_SIZE;
+          player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
       }
     }
   }
@@ -250,10 +229,10 @@ class Board {
     }
   }
 
-  isStanding(player, map) {
+  isStanding(player) {
     const thisPos = this.getTilePos(this.player.x, this.player.y);
-    return ((player.x % this.TILE_SIZE < 1 && this.map[thisPos[0]+1][thisPos[1]].collides) ||
-      (player.x % this.TILE_SIZE >= 1 && (this.map[thisPos[0]+1][thisPos[1]].collides || this.map[thisPos[0]+1][thisPos[1]+1].collides)));
+    return ((player.x % this.TILE_SIZE < 1 && this.map.tile(thisPos[0]+1, thisPos[1]).collides) ||
+      (player.x % this.TILE_SIZE >= 1 && (this.map.tile(thisPos[0]+1, thisPos[1]).collides || this.map.tile(thisPos[0]+1, thisPos[1]+1).collides)));
   }
 
   handleGravity(timeDiff, player) {
@@ -261,8 +240,8 @@ class Board {
       player.yVel = 0;
     } else {
       player.yVel += this.GRAVITY * timeDiff;
-      if (player.yVel > 3) {
-        player.yVel = 3;
+      if (player.yVel > this.MAX_FALL_VEL) {
+        player.yVel = this.MAX_FALL_VEL;
       }
     }
   }
@@ -287,49 +266,13 @@ class Board {
     }
   }
 
-  render() {
-    this.map.forEach((row, vertical) => {
-      row.forEach((tile, horizontal) => {
-        this.context.fillStyle = tile.color;
-        this.context.fillRect(horizontal * this.TILE_SIZE, vertical * this.TILE_SIZE, this.TILE_SIZE, this.TILE_SIZE);
-      });
-    });
-    this.context.fillStyle = "yellow";
-    this.context.fillRect(this.player.x, this.player.y, this.TILE_SIZE, this.TILE_SIZE);
-  }
-
-  generateMap() {
-    let map = [];
-    for(let i = 0; i < 50; i++) {
-      map.push([]);
-      for(let j = 0; j < 50; j++) {
-        if (j === 0 || j === 49) {
-          map[i].push(new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([j*10, i*10], true, 10, "red"));
-        } else {
-          map[i].push(new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([j*10, i*10], false, 10, "blue"));
-        }
-      }
-    }
-    map[22][9] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([90,220], true, 10, "green");
-    map[22][10] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([100,220], true, 10, "green");
-    map[22][11] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([110,220], true, 10, "green");
-    map[21][6] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([60,210], true, 10, "green");
-    map[21][7] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([70,210], true, 10, "green");
-    map[21][8] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([80,210], true, 10, "green");
-    map[20][16] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([160,200], true, 10, "green");
-    map[20][17] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([170,200], true, 10, "green");
-    map[20][18] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([180,200], true, 10, "green");
-    map[15][22] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([220,150], true, 10, "green");
-    map[15][23] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([230,150], true, 10, "green");
-    return map;
-  }
 }
 
-/* harmony default export */ __webpack_exports__["a"] = (Board);
+/* harmony default export */ __webpack_exports__["a"] = (Game);
 
 
 /***/ }),
-/* 5 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -345,13 +288,18 @@ class Player {
     this.right = false;
     this.jump = false;
   }
+
+  render(context) {
+    context.fillStyle = "black";
+    context.fillRect(this.x, this.y, this.size, this.size);
+  }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Player);
 
 
 /***/ }),
-/* 6 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -365,14 +313,81 @@ class Tile {
     this.collides = collides;
   }
 
-  inCollision(tile) {
-    return (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
-      || this.y + this.size <= tile.y || this.y >= tile.y + tile.size);
+  render(context) {
+    if (this.collides) {
+      context.fillStyle = this.color;
+      context.fillRect(this.x, this.y, this.size, this.size);
+    }
   }
+
+  // inCollision(tile) {
+  //   return (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
+  //     || this.y + this.size <= tile.y || this.y >= tile.y + tile.size);
+  // }
 
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Tile);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tile__ = __webpack_require__(3);
+
+
+class Map {
+
+  constructor() {
+    this.map = [];
+  }
+
+  tile(row, col) {
+    return this.map[row][col];
+  }
+
+  nextRow() {
+
+  }
+
+  render(context) {
+    this.map.forEach((row) => {
+      row.forEach((tile) => {
+        tile.render(context);
+      });
+    });
+  }
+
+  generateMap() {
+    this.map = [];
+    for(let i = 0; i < 50; i++) {
+      this.map.push([]);
+      for(let j = 0; j < 50; j++) {
+        if (j === 0 || j === 49) {
+          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*10, i*10], true, 10, "red"));
+        } else {
+          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*10, i*10], false, 10, "blue"));
+        }
+      }
+    }
+    this.map[22][9] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([90,220], true, 10, "green");
+    this.map[22][10] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([100,220], true, 10, "green");
+    this.map[22][11] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([110,220], true, 10, "green");
+    this.map[21][6] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([60,210], true, 10, "green");
+    this.map[21][7] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([70,210], true, 10, "green");
+    this.map[21][8] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([80,210], true, 10, "green");
+    this.map[20][16] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([160,200], true, 10, "green");
+    this.map[20][17] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([170,200], true, 10, "green");
+    this.map[20][18] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([180,200], true, 10, "green");
+    this.map[15][22] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([220,150], true, 10, "green");
+    this.map[15][23] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([230,150], true, 10, "green");
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Map);
 
 
 /***/ })

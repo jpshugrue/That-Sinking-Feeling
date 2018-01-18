@@ -8,10 +8,17 @@ class Tile {
     this.collides = collides;
   }
 
-  inCollision(tile) {
-    return (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
-      || this.y + this.size <= tile.y || this.y >= tile.y + tile.size);
+  render(context) {
+    if (this.collides) {
+      context.fillStyle = this.color;
+      context.fillRect(this.x, this.y, this.size, this.size);
+    }
   }
+
+  // inCollision(tile) {
+  //   return (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
+  //     || this.y + this.size <= tile.y || this.y >= tile.y + tile.size);
+  // }
 
 }
 
