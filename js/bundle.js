@@ -123,9 +123,9 @@ class Board {
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
     this.MAX_HORIZONTAL_VEL = 20;
-    this.MAX_VERTICAL_VEL = 50;
+    this.MAX_VERTICAL_VEL = -10;
     this.FRICTION = 10;
-    this.GRAVITY = 100;
+    this.GRAVITY = 1;
 
     this.map = this.generateMap();
     this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100,200], this.TILE_SIZE);
@@ -163,11 +163,13 @@ class Board {
       this.player.x += this.player.xVel;
     }
     if (this.player.jump) {
-      this.player.y -= this.MAX_VERTICAL_VEL * timeDiff;
+      if (this.player.yVel === 0) { this.player.yVel = this.MAX_VERTICAL_VEL; }
     }
+    this.checkForCollisions();
+    this.player.y += this.player.yVel;
 
     this.handleFriction(timeDiff);
-    // this.handleGravity(timeDiff);
+    this.handleGravity(timeDiff);
   }
 
   getTilePos(x, y) {
@@ -176,10 +178,21 @@ class Board {
     return [column, row];
   }
 
+  // getVertTiles(startPos, endPos) {
+  //   if(startPos[1] % this.TILE_SIZE === 0) {
+  //
+  //   } else {
+  //
+  //   }
+  // }
+
   checkForCollisions() {
     const nextX = this.player.x + this.player.xVel;
     const nextY = this.player.y + this.player.yVel;
     let tilePos = this.getTilePos(nextX, nextY);
+
+
+    // debugger
     if (this.player.xVel < 0) {
       if (this.player.x % this.TILE_SIZE === 0 && this.map[tilePos[0]][tilePos[1]].collides) {
         this.player.xVel = 0;
@@ -197,7 +210,31 @@ class Board {
         this.player.x = this.map[tilePos[0]+1][tilePos[1]].x - this.TILE_SIZE;
       }
     }
+    if (this.player.yVel < 0) {
+      // debugger
+      if (this.player.yVel > 0) {
+        if (this.player.y % this.TILE_SIZE === 0 && this.map[tilePos[0]][tilePos[1]].collides) {
+          this.player.yVel = 0;
+          this.player.y = this.map[tilePos[0]][tilePos[1]].y + this.TILE_SIZE;
+        } else if (this.map[tilePos[0]][tilePos[1]].collides || this.map[tilePos[0]+1][tilePos[1]].collides) {
+          this.player.yVel = 0;
+          this.player.y = this.map[tilePos[0]][tilePos[1]].y + this.TILE_SIZE;
+        }
+      }
+    } else if (this.player.yVel > 0) {
+      debugger
+      if (this.player.y % this.TILE_SIZE === 0 && this.map[tilePos[0]][tilePos[1]+1].collides) {
+        // debugger
+        this.player.yVel = 0;
+        this.player.y = this.map[tilePos[0]][tilePos[1]+1].y - this.TILE_SIZE;
+      } else if (this.map[tilePos[0]][tilePos[1]+1].collides || this.map[tilePos[0]+1][tilePos[1]+1].collides) {
+        // debugger
+        this.player.yVel = 0;
+        this.player.y = this.map[tilePos[0]][tilePos[1]+1].y - this.TILE_SIZE;
+      }
 
+
+    }
   }
 
 
@@ -208,6 +245,14 @@ class Board {
     } else if (this.player.xVel < 0) {
       this.player.xVel += this.FRICTION * timeDiff;
       if (this.player.xVel > 0) { this.player.xVel = 0; }
+    }
+  }
+
+  handleGravity(timeDiff) {
+    // debugger
+    this.player.yVel += this.GRAVITY * timeDiff;
+    if (this.player.yVel > 5) {
+      this.player.yVel = 5;
     }
   }
 
@@ -234,6 +279,10 @@ class Board {
       }
     }
     map[10][10] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([100,100], true, 10, "green");
+
+    map[22][9] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([90,220], true, 10, "green");
+    map[22][10] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([100,220], true, 10, "green");
+    map[22][11] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([110,220], true, 10, "green");
     return map;
   }
 
