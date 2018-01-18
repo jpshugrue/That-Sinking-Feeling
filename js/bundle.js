@@ -197,7 +197,7 @@ class Board {
     const nextY = player.y + player.yVel;
     const tilePos = this.getTilePos(nextX, nextY);
     let nextRow = tilePos[0];
-    const nextCol = tilePos[1];
+    let nextCol = tilePos[1];
 
     if (nextRow < 0) {
       nextRow = 0;
@@ -205,14 +205,15 @@ class Board {
       player.y = 0;
     }
     if (player.xVel < 0) {
-      if ((player.y % this.TILE_SIZE < 1 && map[nextRow][nextCol].collides) ||
-        (player.y % this.TILE_SIZE >= 1 && (map[nextRow][nextCol].collides || map[nextRow+1][nextCol].collides))) {
+      if ((nextY % this.TILE_SIZE < 1 && map[nextRow][nextCol].collides) ||
+        (nextY % this.TILE_SIZE >= 1 && (map[nextRow][nextCol].collides || map[nextRow+1][nextCol].collides))) {
           player.xVel = 0;
           player.x = map[nextRow][nextCol].x + this.TILE_SIZE;
+          nextCol += 1;
       }
     } else if (player.xVel > 0) {
-      if ((player.y % this.TILE_SIZE < 1 && map[nextRow][nextCol+1].collides) ||
-        (player.y % this.TILE_SIZE >= 1 && (map[nextRow][nextCol+1].collides || map[nextRow+1][nextCol+1].collides))) {
+      if ((nextY % this.TILE_SIZE < 1 && map[nextRow][nextCol+1].collides) ||
+        (nextY % this.TILE_SIZE >= 1 && (map[nextRow][nextCol+1].collides || map[nextRow+1][nextCol+1].collides))) {
           player.xVel = 0;
           player.x = map[nextRow][nextCol+1].x - this.TILE_SIZE;
       }
@@ -231,7 +232,6 @@ class Board {
       }
     }
   }
-
 
   handleFriction(timeDiff) {
     if (this.player.xVel > 0) {
