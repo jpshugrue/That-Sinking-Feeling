@@ -125,9 +125,11 @@ class Board {
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
     this.MAX_HORIZONTAL_VEL = 20;
-    this.MAX_VERTICAL_VEL = -2;
+    this.MAX_VERTICAL_VEL = -3;
     this.FRICTION = 10;
     this.GRAVITY = 3;
+
+    this.gameOver = false;
 
     this.map = this.generateMap();
     this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100,200], this.TILE_SIZE);
@@ -151,26 +153,29 @@ class Board {
   }
 
   update(timeDiff, player, map) {
-    if (this.player.left) {
-      this.player.xVel = (this.player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
-      this.checkForCollisions(player, map);
-      if (Math.abs(this.player.xVel) > this.MAX_HORIZONTAL_VEL) { this.player.xVel = -(this.MAX_HORIZONTAL_VEL); }
-      this.player.x += this.player.xVel;
+    if (player.left) {
+      player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (Math.abs(player.xVel) > this.MAX_HORIZONTAL_VEL) { player.xVel = -(this.MAX_HORIZONTAL_VEL); }
     }
-    if (this.player.right) {
-      this.player.xVel = (this.player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
-      this.checkForCollisions(player, map);
-      if (this.player.xVel > this.MAX_HORIZONTAL_VEL) { this.player.xVel = this.MAX_HORIZONTAL_VEL; }
-      this.player.x += this.player.xVel;
+    if (player.right) {
+      player.xVel = (player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
+      if (player.xVel > this.MAX_HORIZONTAL_VEL) { player.xVel = this.MAX_HORIZONTAL_VEL; }
     }
-    if (this.player.jump) {
-     if (this.player.yVel === 0) { this.player.yVel = this.MAX_VERTICAL_VEL; }
+    if (player.jump) {
+      if (player.yVel === 0) { player.yVel = this.MAX_VERTICAL_VEL; }
+    }
+    this.checkForBoundaries(player);
+    if (!this.gameOver) {
+
     }
     this.checkForCollisions(player, map);
-    this.player.y += this.player.yVel;
+    if (player.left || player.right) {
+      player.x += player.xVel;
+    }
+    player.y += player.yVel;
 
     this.handleFriction(timeDiff);
-    this.handleGravity(timeDiff);
+    this.handleGravity(timeDiff, player);
   }
 
   getTilePos(x, y) {
@@ -179,13 +184,26 @@ class Board {
     return [row, column];
   }
 
+  checkForBoundaries(player) {
+    const nextX = player.x + player.xVel;
+    const nextY = player.y + player.yVel;
+    if (nextY > this.BOARD_DIM) {
+      this.gameOver = true;
+    }
+  }
+
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
     const tilePos = this.getTilePos(nextX, nextY);
-    const nextRow = tilePos[0];
+    let nextRow = tilePos[0];
     const nextCol = tilePos[1];
 
+    if (nextRow < 0) {
+      nextRow = 0;
+      player.yVel = 0.01;
+      player.y = 0;
+    }
     if (player.xVel < 0) {
       if ((player.y % this.TILE_SIZE < 1 && map[nextRow][nextCol].collides) ||
         (player.y % this.TILE_SIZE >= 1 && (map[nextRow][nextCol].collides || map[nextRow+1][nextCol].collides))) {
@@ -225,18 +243,19 @@ class Board {
     }
   }
 
-  isStanding() {
+  isStanding(player, map) {
     const thisPos = this.getTilePos(this.player.x, this.player.y);
-    return this.map[thisPos[0]+1][thisPos[1]].collides;
+    return ((player.x % this.TILE_SIZE < 1 && this.map[thisPos[0]+1][thisPos[1]].collides) ||
+      (player.x % this.TILE_SIZE >= 1 && (this.map[thisPos[0]+1][thisPos[1]].collides || this.map[thisPos[0]+1][thisPos[1]+1].collides)));
   }
 
-  handleGravity(timeDiff) {
-    if (this.isStanding()) {
-      this.player.yVel = 0;
+  handleGravity(timeDiff, player) {
+    if (this.isStanding(player)) {
+      player.yVel = 0;
     } else {
-      this.player.yVel += this.GRAVITY * timeDiff;
-      if (this.player.yVel > 3) {
-        this.player.yVel = 3;
+      player.yVel += this.GRAVITY * timeDiff;
+      if (player.yVel > 3) {
+        player.yVel = 3;
       }
     }
   }
@@ -248,6 +267,12 @@ class Board {
         break;
       case "ArrowRight":
         this.player.right = pressed;
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        break;
+      case "ArrowDown":
+        event.preventDefault();
         break;
       case " ":
         event.preventDefault();
@@ -271,7 +296,11 @@ class Board {
     for(let i = 0; i < 50; i++) {
       map.push([]);
       for(let j = 0; j < 50; j++) {
-        map[i].push(new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([j*10, i*10], false, 10, "blue"));
+        if (j === 0 || j === 49) {
+          map[i].push(new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([j*10, i*10], true, 10, "red"));
+        } else {
+          map[i].push(new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([j*10, i*10], false, 10, "blue"));
+        }
       }
     }
     map[22][9] = new __WEBPACK_IMPORTED_MODULE_1__tile__["a" /* default */]([90,220], true, 10, "green");
