@@ -9,6 +9,7 @@ class Map {
     this.map = [];
     this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
+    this.offSet = 0;
   }
 
   tile(row, col) {
@@ -16,16 +17,30 @@ class Map {
   }
 
   nextRow() {
-    this.map.forEach((row, idx) => {
-      if (idx === this.map.length - 1) {
+    for(let idx = this.map.length - 1; idx >= 0; idx--) {
+      if (idx === 0) {
         this.map[idx] = this.generateRow();
-      } else {
-        row.forEach((tile) => {
-          tile.y = tile.y + this.tileSize;
+        this.map[idx].forEach((tile) => {
+          tile.y = -this.tileSize;
         });
-        this.map[idx] = this.map[idx + 1];
+      } else {
+        this.map[idx] = this.map[idx - 1];
       }
+    }
+  }
+
+  nextPixel() {
+    this.offSet += 1;
+    this.map.forEach((row) => {
+      row.forEach((tile) => {
+          tile.y += 1;
+      });
     });
+    if (this.map[0][0].y === 0 ) {
+      this.offSet = 0;
+      this.nextRow();
+    }
+    // debugger
   }
 
   generateRow() {
@@ -44,7 +59,7 @@ class Map {
         newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, "red"));
       } else {
         newRow.push(new Tile([i * this.tileSize, 0], false, this.tileSize, "blue"));
-      }  
+      }
     }
     if (platform) {
       for(let i = 0; i < platform.length; i++) {
@@ -74,14 +89,14 @@ class Map {
 
   generateMap(boardDim, tileSize) {
     this.map = [];
-    for(let i = 0; i < this.numTiles; i++) {
+    for(let i = 0; i <= this.numTiles; i++) {
       this.map.push(this.generateRow());
       this.map[i].forEach((tile) => {
-        tile.y = i*this.tileSize;
+        tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[40][25] = new Tile([250,400], false, 10, "blue");
-    this.map[41][25] = new Tile([250,410], true, 10, "green");
+    this.map[41][25] = new Tile([250,400], false, 10, "blue");
+    this.map[42][25] = new Tile([250,410], true, 10, "green");
   }
 
 }

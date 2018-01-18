@@ -106,7 +106,6 @@ class Game {
 
     this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    // debugger
     this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([250,400], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
@@ -163,12 +162,16 @@ class Game {
       this.handleFriction(timeDiff);
       this.handleGravity(timeDiff, player);
     }
+    if (this.player.y < this.BOARD_DIM / 2) {
+      this.map.nextPixel();
+      this.player.y += 1;
+    }
   }
 
   getTilePos(x, y) {
     const column = Math.floor(x / this.TILE_SIZE);
     const row = Math.floor(y / this.TILE_SIZE);
-    return [row, column];
+    return [row + 1, column];
   }
 
   checkForBoundaries(player) {
@@ -181,7 +184,7 @@ class Game {
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
-    const tilePos = this.getTilePos(nextX, nextY);
+    const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
 
@@ -320,10 +323,10 @@ class Tile {
     }
   }
 
-  // inCollision(tile) {
-  //   return (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
-  //     || this.y + this.size <= tile.y || this.y >= tile.y + tile.size);
-  // }
+  inCollision(tile) {
+    return (this.collides && (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
+      || this.y + this.size <= tile.y || this.y >= tile.y + tile.size));
+  }
 
 }
 
@@ -347,6 +350,7 @@ class Map {
     this.map = [];
     this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
+    this.offSet = 0;
   }
 
   tile(row, col) {
@@ -354,16 +358,30 @@ class Map {
   }
 
   nextRow() {
-    this.map.forEach((row, idx) => {
-      if (idx === this.map.length - 1) {
+    for(let idx = this.map.length - 1; idx >= 0; idx--) {
+      if (idx === 0) {
         this.map[idx] = this.generateRow();
-      } else {
-        row.forEach((tile) => {
-          tile.y = tile.y + this.tileSize;
+        this.map[idx].forEach((tile) => {
+          tile.y = -this.tileSize;
         });
-        this.map[idx] = this.map[idx + 1];
+      } else {
+        this.map[idx] = this.map[idx - 1];
       }
+    }
+  }
+
+  nextPixel() {
+    this.offSet += 1;
+    this.map.forEach((row) => {
+      row.forEach((tile) => {
+          tile.y += 1;
+      });
     });
+    if (this.map[0][0].y === 0 ) {
+      this.offSet = 0;
+      this.nextRow();
+    }
+    // debugger
   }
 
   generateRow() {
@@ -382,7 +400,7 @@ class Map {
         newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, "red"));
       } else {
         newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, "blue"));
-      }  
+      }
     }
     if (platform) {
       for(let i = 0; i < platform.length; i++) {
@@ -412,14 +430,14 @@ class Map {
 
   generateMap(boardDim, tileSize) {
     this.map = [];
-    for(let i = 0; i < this.numTiles; i++) {
+    for(let i = 0; i <= this.numTiles; i++) {
       this.map.push(this.generateRow());
       this.map[i].forEach((tile) => {
-        tile.y = i*this.tileSize;
+        tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[40][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([250,400], false, 10, "blue");
-    this.map[41][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([250,410], true, 10, "green");
+    this.map[41][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([250,400], false, 10, "blue");
+    this.map[42][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([250,410], true, 10, "green");
   }
 
 }

@@ -19,7 +19,6 @@ class Game {
 
     this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    // debugger
     this.player = new Player([250,400], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
@@ -76,12 +75,16 @@ class Game {
       this.handleFriction(timeDiff);
       this.handleGravity(timeDiff, player);
     }
+    if (this.player.y < this.BOARD_DIM / 2) {
+      this.map.nextPixel();
+      this.player.y += 1;
+    }
   }
 
   getTilePos(x, y) {
     const column = Math.floor(x / this.TILE_SIZE);
     const row = Math.floor(y / this.TILE_SIZE);
-    return [row, column];
+    return [row + 1, column];
   }
 
   checkForBoundaries(player) {
@@ -94,7 +97,7 @@ class Game {
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
-    const tilePos = this.getTilePos(nextX, nextY);
+    const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
 
