@@ -31,9 +31,19 @@ class Board {
     let then = this.now;
     this.now = Date.now();
     let timeDiff = (this.now - then) / 1000.0;
-    this.update(timeDiff, this.player, this.map);
-    this.render();
+    if (this.gameOver) {
+      this.endGame();
+    } else {
+      this.update(timeDiff, this.player, this.map);
+      this.render();
+    }
+
     window.requestAnimationFrame(this.main);
+  }
+
+  endGame() {
+    this.context.font = "30px Arial";
+    this.context.fillText("Game Over",200,200);
   }
 
   update(timeDiff, player, map) {
@@ -50,16 +60,14 @@ class Board {
     }
     this.checkForBoundaries(player);
     if (!this.gameOver) {
-
+      this.checkForCollisions(player, map);
+      if (player.left || player.right) {
+        player.x += player.xVel;
+      }
+      player.y += player.yVel;
+      this.handleFriction(timeDiff);
+      this.handleGravity(timeDiff, player);
     }
-    this.checkForCollisions(player, map);
-    if (player.left || player.right) {
-      player.x += player.xVel;
-    }
-    player.y += player.yVel;
-
-    this.handleFriction(timeDiff);
-    this.handleGravity(timeDiff, player);
   }
 
   getTilePos(x, y) {
@@ -69,9 +77,8 @@ class Board {
   }
 
   checkForBoundaries(player) {
-    const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
-    if (nextY > this.BOARD_DIM) {
+    if (nextY > this.BOARD_DIM - this.TILE_SIZE) {
       this.gameOver = true;
     }
   }

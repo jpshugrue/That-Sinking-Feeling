@@ -10,9 +10,6 @@ class Player {
     this.right = false;
     this.jump = false;
   }
-
-
-
 }
 
 export default Player;
