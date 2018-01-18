@@ -20,7 +20,7 @@ class Game {
     this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
     // debugger
-    this.player = new Player([250,250], this.TILE_SIZE);
+    this.player = new Player([250,400], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
