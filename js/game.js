@@ -9,18 +9,18 @@ class Game {
 
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
-    this.MAX_HORIZONTAL_VEL = 20;
-    this.MAX_JUMP_VEL = -3;
-    this.MAX_FALL_VEL = 7;
+    this.MAX_HORIZONTAL_VEL = 14;
+    this.MAX_JUMP_VEL = -5;
+    this.MAX_FALL_VEL = 20;
     this.FRICTION = 10;
-    this.GRAVITY = 5;
+    this.GRAVITY = 10;
 
     this.gameOver = false;
 
-    this.map = new Map;
-    this.map.generateMap();
+    this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
+    this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
 
-    this.player = new Player([100,200], this.TILE_SIZE);
+    this.player = new Player([250,250], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));

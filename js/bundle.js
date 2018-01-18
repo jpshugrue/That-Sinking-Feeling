@@ -96,18 +96,18 @@ class Game {
 
     this.TILE_SIZE = 10;
     this.BOARD_DIM = 500;
-    this.MAX_HORIZONTAL_VEL = 20;
-    this.MAX_JUMP_VEL = -3;
-    this.MAX_FALL_VEL = 7;
+    this.MAX_HORIZONTAL_VEL = 14;
+    this.MAX_JUMP_VEL = -5;
+    this.MAX_FALL_VEL = 20;
     this.FRICTION = 10;
-    this.GRAVITY = 5;
+    this.GRAVITY = 10;
 
     this.gameOver = false;
 
-    this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */];
-    this.map.generateMap();
+    this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
+    this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
 
-    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([100,200], this.TILE_SIZE);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([250,250], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -340,8 +340,12 @@ class Tile {
 
 class Map {
 
-  constructor() {
+  constructor(boardDim, tileSize, context) {
+    this.boardDim = boardDim;
+    this.tileSize = tileSize;
+    this.context = context;
     this.map = [];
+    this.rowsWoPlatform = 0;
   }
 
   tile(row, col) {
@@ -349,40 +353,85 @@ class Map {
   }
 
   nextRow() {
-
+    this.map.forEach((row, idx) => {
+      if (idx === this.map.length - 1) {
+        this.map[idx] = this.generateRow();
+      } else {
+        row.forEach((tile) => {
+          tile.y = tile.y + this.tileSize;
+        });
+        this.map[idx] = this.map[idx + 1];
+      }
+    });
   }
 
-  render(context) {
+  generateRow() {
+    let newRow = [];
+    const numTiles = this.boardDim / this.tileSize;
+    let platform, platformPos;
+    if (this.rowsWoPlatform > 4 || Math.random() < 0.2) {
+      platform = this.generatePlatform();
+      platformPos = Math.floor(Math.random() * numTiles) - platform.length;
+      // This way may result in left biased placement of platforms
+      if (platformPos < 0) { platformPos = 0; }
+      this.rowsWoPlatform = 0;
+    } else {
+      this.rowsWoPlatform += 1;
+    }
+    for(let i = 0; i < numTiles; i++) {
+      newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, "blue"));
+    }
+    if (platform) {
+      for(let i = 0; i < platform.length; i++) {
+        platform[i].x = this.tileSize * (platformPos + i);
+        newRow[platformPos + i] = platform[i];
+      }
+    }
+  }
+
+  generatePlatform() {
+    const length = Math.floor(Math.random() * (this.numTiles / 2 - 2)) + 3;
+    let platform = [];
+    for (let i = 0; i < length; i++) {
+      platform.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([0, 0], true, this.tileSize, "green"));
+    }
+    return platform;
+  }
+
+  render() {
     this.map.forEach((row) => {
       row.forEach((tile) => {
-        tile.render(context);
+        tile.render(this.context);
       });
     });
   }
 
-  generateMap() {
+  generateMap(boardDim, tileSize) {
+    const numTiles = this.boardDim / this.tileSize;
     this.map = [];
-    for(let i = 0; i < 50; i++) {
+    for(let i = 0; i < numTiles; i++) {
       this.map.push([]);
-      for(let j = 0; j < 50; j++) {
-        if (j === 0 || j === 49) {
-          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*10, i*10], true, 10, "red"));
+      for(let j = 0; j < numTiles; j++) {
+        if (j === 0 || j === numTiles-1) {
+          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*this.tileSize, i*this.tileSize], true, this.tileSize, "red"));
         } else {
-          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*10, i*10], false, 10, "blue"));
+          this.map[i].push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([j*this.tileSize, i*this.tileSize], false, this.tileSize, "blue"));
         }
       }
     }
-    this.map[22][9] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([90,220], true, 10, "green");
-    this.map[22][10] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([100,220], true, 10, "green");
-    this.map[22][11] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([110,220], true, 10, "green");
-    this.map[21][6] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([60,210], true, 10, "green");
-    this.map[21][7] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([70,210], true, 10, "green");
-    this.map[21][8] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([80,210], true, 10, "green");
-    this.map[20][16] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([160,200], true, 10, "green");
-    this.map[20][17] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([170,200], true, 10, "green");
-    this.map[20][18] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([180,200], true, 10, "green");
-    this.map[15][22] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([220,150], true, 10, "green");
-    this.map[15][23] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([230,150], true, 10, "green");
+    this.map[26][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([250,260], true, 10, "green");
+    this.map[19][26] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([260,190], true, 10, "green");
+    this.map[26][5] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([50,260], true, 10, "green");
+    // this.map[22][10] = new Tile([100,220], true, 10, "green");
+    // this.map[22][11] = new Tile([110,220], true, 10, "green");
+    // this.map[21][6] = new Tile([60,210], true, 10, "green");
+    // this.map[21][7] = new Tile([70,210], true, 10, "green");
+    // this.map[21][8] = new Tile([80,210], true, 10, "green");
+    // this.map[20][16] = new Tile([160,200], true, 10, "green");
+    // this.map[20][17] = new Tile([170,200], true, 10, "green");
+    // this.map[20][18] = new Tile([180,200], true, 10, "green");
+    // this.map[15][22] = new Tile([220,150], true, 10, "green");
+    // this.map[15][23] = new Tile([230,150], true, 10, "green");
   }
 
 }
