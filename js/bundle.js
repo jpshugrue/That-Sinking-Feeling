@@ -508,7 +508,6 @@ class Water {
   }
 
   animate() {
-    console.log("gets here");
     if (this.waterImg === this.waterImg1) {
       this.waterImg = this.waterImg2;
     } else {
@@ -517,7 +516,10 @@ class Water {
   }
 
   render() {
+    this.context.save();
+    this.context.globalAlpha = 0.7;
     this.context.drawImage(this.waterImg, this.tileSize, this.level);
+    this.context.restore();
   }
 
 }
