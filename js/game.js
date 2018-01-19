@@ -1,5 +1,6 @@
 import Player from './player';
 import Map from './map';
+import Water from './water';
 
 class Game {
 
@@ -30,6 +31,8 @@ class Game {
 
     this.background = new Image(this.boardDim, this.boardDim);
     this.background.src = 'images/sprites/bg_orig.gif';
+
+    this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
   }
 
   main() {
@@ -52,6 +55,7 @@ class Game {
     this.context.drawImage(this.background, 0, 0);
     this.map.render(this.context);
     this.player.render(this.context);
+    this.water.render();
   }
 
   endGame() {
@@ -85,8 +89,10 @@ class Game {
     }
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
+      this.water.nextPixel();
       this.player.y += 1;
     }
+    this.water.update(timeDiff);
   }
 
   getTilePos(x, y) {

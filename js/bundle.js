@@ -85,6 +85,8 @@ $(() => {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__map__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__water__ = __webpack_require__(5);
+
 
 
 
@@ -117,6 +119,8 @@ class Game {
 
     this.background = new Image(this.boardDim, this.boardDim);
     this.background.src = 'images/sprites/bg_orig.gif';
+
+    this.water = new __WEBPACK_IMPORTED_MODULE_2__water__["a" /* default */](this.TILE_SIZE, this.BOARD_DIM, this.context);
   }
 
   main() {
@@ -139,6 +143,7 @@ class Game {
     this.context.drawImage(this.background, 0, 0);
     this.map.render(this.context);
     this.player.render(this.context);
+    this.water.render();
   }
 
   endGame() {
@@ -172,8 +177,10 @@ class Game {
     }
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
+      this.water.nextPixel();
       this.player.y += 1;
     }
+    this.water.update(timeDiff);
   }
 
   getTilePos(x, y) {
@@ -460,6 +467,62 @@ class Tile {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Tile);
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Water {
+
+  constructor(tileSize, boardDim, context) {
+    this.tileSize = tileSize;
+    this.boardDim = boardDim;
+    this.context = context;
+
+    this.waterImg1 = new Image(boardDim-this.tileSize, boardDim);
+    this.waterImg1.src = 'images/sprites/water1.png';
+
+    this.waterImg2 = new Image(boardDim-this.tileSize, boardDim);
+    this.waterImg2.src = 'images/sprites/water2.png';
+
+    this.waterImg = this.waterImg1;
+
+    this.level = boardDim - (tileSize * 3);
+    this.speed = 20;
+    this.animCounter = 0;
+  }
+
+  update(timeDiff) {
+    this.level -= timeDiff * this.speed;
+    this.animCounter += timeDiff;
+    if (this.animCounter > 1) {
+      this.animCounter = 0;
+      this.animate();
+    }
+  }
+
+  nextPixel() {
+    this.level += 1;
+  }
+
+  animate() {
+    console.log("gets here");
+    if (this.waterImg === this.waterImg1) {
+      this.waterImg = this.waterImg2;
+    } else {
+      this.waterImg = this.waterImg1;
+    }
+  }
+
+  render() {
+    this.context.drawImage(this.waterImg, this.tileSize, this.level);
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Water);
 
 
 /***/ })
