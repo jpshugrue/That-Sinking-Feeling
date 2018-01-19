@@ -40,7 +40,6 @@ class Map {
       this.offSet = 0;
       this.nextRow();
     }
-    // debugger
   }
 
   generateRow() {

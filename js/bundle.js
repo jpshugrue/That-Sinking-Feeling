@@ -160,7 +160,7 @@ class Game {
       }
       player.y += player.yVel;
       this.handleFriction(timeDiff);
-      this.handleGravity(timeDiff, player);
+      this.handleGravity(timeDiff, player, map);
     }
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
@@ -184,6 +184,7 @@ class Game {
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
+    const nextPlayer = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([nextX, nextY], this.TILE_SIZE);
     const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
@@ -194,31 +195,53 @@ class Game {
       player.y = 0;
     }
     if (player.xVel < 0) {
-      if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
-        (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow+1, nextCol).collides))) {
-          player.xVel = 0;
-          player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
-          nextCol += 1;
+      if(map.tile(nextRow, nextCol).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol).inCollision(nextPlayer)) {
+        // debugger
+        player.xVel = 0;
+        player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
+        nextCol += 1;
       }
+
+      // if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
+      //   (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow+1, nextCol).collides))) {
+      //     player.xVel = 0;
+      //     player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
+      //     nextCol += 1;
+      // }
     } else if (player.xVel > 0) {
-      if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol+1).collides) ||
-        (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol+1).collides || map.tile(nextRow+1, nextCol+1).collides))) {
-          player.xVel = 0;
-          player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
+      if(map.tile(nextRow, nextCol+1).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol+1).inCollision(nextPlayer)) {
+        player.xVel = 0;
+        player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
       }
+
+      // if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol+1).collides) ||
+      //   (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol+1).collides || map.tile(nextRow+1, nextCol+1).collides))) {
+      //     player.xVel = 0;
+      //     player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
+      // }
     }
     if (player.yVel < 0) {
-      if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
-        (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow, nextCol+1).collides))) {
-          player.yVel = 0;
-          player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
+      if(map.tile(nextRow, nextCol).inCollision(nextPlayer) || map.tile(nextRow, nextCol+1).inCollision(nextPlayer)) {
+        player.yVel = 0;
+        player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
       }
+
+      // if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
+      //   (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow, nextCol+1).collides))) {
+      //     player.yVel = 0;
+      //     player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
+      // }
     } else if (player.yVel > 0) {
-      if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow+1, nextCol).collides) ||
-        (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow+1, nextCol).collides || map.tile(nextRow+1, nextCol+1).collides))) {
-          player.yVel = 0;
-          player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
+      if(map.tile(nextRow+1, nextCol).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol+1).inCollision(nextPlayer)) {
+        player.yVel = 0;
+        player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
       }
+
+      // if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow+1, nextCol).collides) ||
+      //   (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow+1, nextCol).collides || map.tile(nextRow+1, nextCol+1).collides))) {
+      //     player.yVel = 0;
+      //     player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
+      // }
     }
   }
 
@@ -232,14 +255,16 @@ class Game {
     }
   }
 
-  isStanding(player) {
-    const thisPos = this.getTilePos(this.player.x, this.player.y);
-    return ((player.x % this.TILE_SIZE < 1 && this.map.tile(thisPos[0]+1, thisPos[1]).collides) ||
-      (player.x % this.TILE_SIZE >= 1 && (this.map.tile(thisPos[0]+1, thisPos[1]).collides || this.map.tile(thisPos[0]+1, thisPos[1]+1).collides)));
+  isStanding(player, map) {
+    const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
+    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || this.map.tile(tilePos[0]+1, tilePos[1]+1).collides);
+    // const thisPos = this.getTilePos(this.player.x, this.player.y);
+    // return ((player.x % this.TILE_SIZE < 1 && this.map.tile(thisPos[0]+1, thisPos[1]).collides) ||
+    //   (player.x % this.TILE_SIZE >= 1 && (this.map.tile(thisPos[0]+1, thisPos[1]).collides || this.map.tile(thisPos[0]+1, thisPos[1]+1).collides)));
   }
 
-  handleGravity(timeDiff, player) {
-    if (this.isStanding(player)) {
+  handleGravity(timeDiff, player, map) {
+    if (this.isStanding(player, map)) {
       player.yVel = 0;
     } else {
       player.yVel += this.GRAVITY * timeDiff;
@@ -323,9 +348,10 @@ class Tile {
     }
   }
 
-  inCollision(tile) {
-    return (this.collides && (this.x + this.size <= tile.x || this.x >= tile.x + tile.size
-      || this.y + this.size <= tile.y || this.y >= tile.y + tile.size));
+  inCollision(player) {
+    // debugger
+    return (this.collides && !(this.x >= player.x + player.size || this.x + this.size <= player.x
+      || this.y >= player.y + player.size || this.y + this.size <= player.y));
   }
 
 }
@@ -381,7 +407,6 @@ class Map {
       this.offSet = 0;
       this.nextRow();
     }
-    // debugger
   }
 
   generateRow() {
