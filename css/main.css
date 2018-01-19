@@ -7,6 +7,15 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'wide_pixel-7regular';
+    src: url('fonts/wide_pixel-7-webfont.woff2') format('woff2'),
+         url('fonts/wide_pixel-7-webfont.woff') format('woff'),
+         url('fonts/wide_pixel-7-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 canvas {
   border: 1px solid black;
 }
@@ -40,4 +49,42 @@ header span {
   color: #314361;
   font-family: extrudemedium;
   font-size: 48px;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  color: white;
+}
+
+footer nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+footer span {
+  font-family: wide_pixel-7regular;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+a {
+  text-decoration: none;
+  padding: 10px;
+  display: inline-block;
+  height: 64px;
+  color: white;
+  font-size: 55px;
+}
+
+.fa {
+
+}
+
+.devicon-github-plain {
+  font-size: 50px;
+  color: white;
 }
