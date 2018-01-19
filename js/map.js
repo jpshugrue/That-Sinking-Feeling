@@ -94,8 +94,8 @@ class Map {
         tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[41][25] = new Tile([250,400], false, 10, "blue");
-    this.map[42][25] = new Tile([250,410], true, 10, "green");
+    this.map[41][25] = new Tile([375,640], false, 16, "blue");
+    this.map[42][25] = new Tile([375,656], true, 16, "green");
   }
 
 }

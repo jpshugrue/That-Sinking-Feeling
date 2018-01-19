@@ -7,13 +7,13 @@ class Game {
     const canvas = document.getElementById('gameCanvas');
     this.context = canvas.getContext('2d');
 
-    this.TILE_SIZE = 10;
-    this.BOARD_DIM = 500;
-    this.MAX_HORIZONTAL_VEL = 14;
-    this.MAX_JUMP_VEL = -5;
-    this.MAX_FALL_VEL = 20;
-    this.FRICTION = 10;
-    this.GRAVITY = 10;
+    this.TILE_SIZE = 16;
+    this.BOARD_DIM = 800;
+    this.MAX_HORIZONTAL_VEL = 22;
+    this.MAX_JUMP_VEL = -8;
+    this.MAX_FALL_VEL = 32;
+    this.FRICTION = 16;
+    this.GRAVITY = 16;
 
     this.gameOver = false;
 
@@ -114,47 +114,22 @@ class Game {
         player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
         nextCol += 1;
       }
-
-      // if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
-      //   (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow+1, nextCol).collides))) {
-      //     player.xVel = 0;
-      //     player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
-      //     nextCol += 1;
-      // }
     } else if (player.xVel > 0) {
       if(map.tile(nextRow, nextCol+1).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol+1).inCollision(nextPlayer)) {
         player.xVel = 0;
         player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
       }
-
-      // if ((nextY % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol+1).collides) ||
-      //   (nextY % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol+1).collides || map.tile(nextRow+1, nextCol+1).collides))) {
-      //     player.xVel = 0;
-      //     player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
-      // }
     }
     if (player.yVel < 0) {
       if(map.tile(nextRow, nextCol).inCollision(nextPlayer) || map.tile(nextRow, nextCol+1).inCollision(nextPlayer)) {
         player.yVel = 0;
         player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
       }
-
-      // if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow, nextCol).collides) ||
-      //   (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow, nextCol).collides || map.tile(nextRow, nextCol+1).collides))) {
-      //     player.yVel = 0;
-      //     player.y = map.tile(nextRow, nextCol).y + this.TILE_SIZE;
-      // }
     } else if (player.yVel > 0) {
       if(map.tile(nextRow+1, nextCol).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol+1).inCollision(nextPlayer)) {
         player.yVel = 0;
         player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
       }
-
-      // if ((player.x % this.TILE_SIZE < 1 && map.tile(nextRow+1, nextCol).collides) ||
-      //   (player.x % this.TILE_SIZE >= 1 && (map.tile(nextRow+1, nextCol).collides || map.tile(nextRow+1, nextCol+1).collides))) {
-      //     player.yVel = 0;
-      //     player.y = map.tile(nextRow+1, nextCol).y - this.TILE_SIZE;
-      // }
     }
   }
 
@@ -171,9 +146,6 @@ class Game {
   isStanding(player, map) {
     const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
     return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || this.map.tile(tilePos[0]+1, tilePos[1]+1).collides);
-    // const thisPos = this.getTilePos(this.player.x, this.player.y);
-    // return ((player.x % this.TILE_SIZE < 1 && this.map.tile(thisPos[0]+1, thisPos[1]).collides) ||
-    //   (player.x % this.TILE_SIZE >= 1 && (this.map.tile(thisPos[0]+1, thisPos[1]).collides || this.map.tile(thisPos[0]+1, thisPos[1]+1).collides)));
   }
 
   handleGravity(timeDiff, player, map) {
