@@ -108,7 +108,7 @@ class Game {
 
     this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([320,384], this.TILE_SIZE);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,508], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -319,6 +319,8 @@ class Player {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tile__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mapSet__ = __webpack_require__(6);
+
 
 
 class Map {
@@ -328,15 +330,16 @@ class Map {
     this.tileSize = tileSize;
     this.context = context;
     this.map = [];
-    this.rowsWoPlatform = 0;
+    this.mapSet = new __WEBPACK_IMPORTED_MODULE_1__mapSet__["a" /* default */](this.tileSize, this.boardDim);
+    // this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
     this.offSet = 0;
-    this.leftWallImg = new Image(this.tileSize, this.tileSize);
-    this.leftWallImg.src = 'images/sprites/left_wall.gif';
-    this.rightWallImg = new Image(this.tileSize, this.tileSize);
-    this.rightWallImg.src = 'images/sprites/right_wall.gif';
-    this.platformImg = new Image(this.tileSize, this.tileSize);
-    this.platformImg.src = 'images/sprites/platform.gif';
+    // this.leftWallImg = new Image(this.tileSize, this.tileSize);
+    // this.leftWallImg.src = 'images/sprites/left_wall.gif';
+    // this.rightWallImg = new Image(this.tileSize, this.tileSize);
+    // this.rightWallImg.src = 'images/sprites/right_wall.gif';
+    // this.platformImg = new Image(this.tileSize, this.tileSize);
+    // this.platformImg.src = 'images/sprites/platform.gif';
   }
 
   tile(row, col) {
@@ -346,7 +349,7 @@ class Map {
   nextRow() {
     for(let idx = this.map.length - 1; idx >= 0; idx--) {
       if (idx === 0) {
-        this.map[idx] = this.generateRow();
+        this.map[idx] = this.mapSet.getRow();
         this.map[idx].forEach((tile) => {
           tile.y = -this.tileSize;
         });
@@ -368,44 +371,44 @@ class Map {
       this.nextRow();
     }
   }
-
-  generateRow() {
-    let newRow = [];
-    let platform, platformPos;
-    if (this.rowsWoPlatform > 4 || Math.random() < 0.2) {
-      platform = this.generatePlatform();
-      platformPos = Math.floor(Math.random() * (this.numTiles - platform.length));
-      if (platformPos < 0) { platformPos = 0; }
-      this.rowsWoPlatform = 0;
-    } else {
-      this.rowsWoPlatform += 1;
-    }
-    for(let i = 0; i < this.numTiles; i++) {
-      if (i === 0) {
-        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
-      } else if (i === this.numTiles - 1) {
-        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
-      } else {
-        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, "blue"));
-      }
-    }
-    if (platform) {
-      for(let i = 0; i < platform.length; i++) {
-        platform[i].x = this.tileSize * (platformPos + i);
-        newRow[platformPos + i] = platform[i];
-      }
-    }
-    return newRow;
-  }
-
-  generatePlatform() {
-    const length = Math.floor(Math.random() * (this.numTiles / 2 - 4)) + 3;
-    let platform = [];
-    for (let i = 0; i < length; i++) {
-      platform.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([0, 0], true, this.tileSize, this.platformImg));
-    }
-    return platform;
-  }
+  //
+  // generateRow() {
+  //   let newRow = [];
+  //   let platform, platformPos;
+  //   if (this.rowsWoPlatform > 4 || Math.random() < 0.2) {
+  //     platform = this.generatePlatform();
+  //     platformPos = Math.floor(Math.random() * (this.numTiles - platform.length));
+  //     if (platformPos < 0) { platformPos = 0; }
+  //     this.rowsWoPlatform = 0;
+  //   } else {
+  //     this.rowsWoPlatform += 1;
+  //   }
+  //   for(let i = 0; i < this.numTiles; i++) {
+  //     if (i === 0) {
+  //       newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
+  //     } else if (i === this.numTiles - 1) {
+  //       newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
+  //     } else {
+  //       newRow.push(new Tile([i * this.tileSize, 0], false, this.tileSize, "blue"));
+  //     }
+  //   }
+  //   if (platform) {
+  //     for(let i = 0; i < platform.length; i++) {
+  //       platform[i].x = this.tileSize * (platformPos + i);
+  //       newRow[platformPos + i] = platform[i];
+  //     }
+  //   }
+  //   return newRow;
+  // }
+  //
+  // generatePlatform() {
+  //   const length = Math.floor(Math.random() * (this.numTiles / 2 - 4)) + 3;
+  //   let platform = [];
+  //   for (let i = 0; i < length; i++) {
+  //     platform.push(new Tile([0, 0], true, this.tileSize, this.platformImg));
+  //   }
+  //   return platform;
+  // }
 
   render() {
     this.map.forEach((row) => {
@@ -416,15 +419,17 @@ class Map {
   }
 
   generateMap(boardDim, tileSize) {
+
     this.map = [];
     for(let i = 0; i <= this.numTiles; i++) {
-      this.map.push(this.generateRow());
+      // this.map.push(this.generateRow());
+      this.map.push(this.mapSet.getRow());
       this.map[i].forEach((tile) => {
         tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[25][20] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([320,384], false, 16, "blue");
-    this.map[26][20] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([320,400], true, 16, this.platformImg);
+    // this.map[25][20] = new Tile([320,384], false, 16, "blue");
+    // this.map[26][20] = new Tile([320,400], true, 16, this.platformImg);
     // this.map[41][25] = new Tile([375,640], false, 16, "blue");
     // this.map[42][25] = new Tile([375,656], true, 16, "green");
   }
@@ -452,14 +457,10 @@ class Tile {
   render(context) {
     if (this.collides) {
       context.drawImage(this.image, this.x, this.y);
-      // UPDATE THIS
-      // context.fillStyle = this.color;
-      // context.fillRect(this.x, this.y, this.size, this.size);
     }
   }
 
   inCollision(player) {
-    // debugger
     return (this.collides && !(this.x >= player.x + player.size || this.x + this.size <= player.x
       || this.y >= player.y + player.size || this.y + this.size <= player.y));
   }
@@ -489,7 +490,7 @@ class Water {
 
     this.waterImg = this.waterImg1;
 
-    this.level = boardDim - (tileSize * 3);
+    this.level = boardDim - (tileSize);
     this.speed = 40;
     this.animCounter = 0;
   }
@@ -525,6 +526,109 @@ class Water {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Water);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tile__ = __webpack_require__(4);
+
+
+class MapSet {
+
+  constructor(tileSize, boardDim) {
+    this.tileSize = tileSize;
+    this.boardDim = boardDim;
+    this.numTiles = this.boardDim / this.tileSize;
+
+    this.leftWallImg = new Image(this.tileSize, this.tileSize);
+    this.leftWallImg.src = 'images/sprites/left_wall.gif';
+    this.rightWallImg = new Image(this.tileSize, this.tileSize);
+    this.rightWallImg.src = 'images/sprites/right_wall.gif';
+    this.platformImg = new Image(this.tileSize, this.tileSize);
+    this.platformImg.src = 'images/sprites/platform.gif';
+
+    this.allSets = this.populateSets();
+    this.set = this.generateFirstSet();
+    // debugger
+
+
+    // this.generateBlankRow = this.generateBlankRow.bind(this);
+  }
+
+  getRow() {
+    // debugger
+    if (this.set.length === 0) {
+      this.set = this.generateSet();
+    }
+    return this.set.pop();
+  }
+
+  generateSet() {
+    //select randomly from allSets and return picked set
+  }
+
+  translate(set) {
+    const translation = [];
+    for(let i = 0; i <= this.numTiles; i++) {
+      const tempRow = this.generateBlankRow();
+      if (Object.keys(set).includes(`${i}`)) {
+        // debugger
+        set[`${i}`].forEach((col) => {
+          tempRow[col].collides = true;
+        });
+      }
+      translation.push(tempRow);
+    }
+    // debugger
+    return translation;
+  }
+
+  generateBlankRow() {
+    // debugger
+    const blankRow = [];
+    for(let i = 0; i < this.numTiles; i++) {
+      // debugger
+      if (i === 0) {
+        blankRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
+      } else if(i === this.numTiles - 1) {
+        blankRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
+      } else {
+        blankRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, this.platformImg));
+      }
+    }
+    // debugger
+    return blankRow;
+  }
+
+  generateFirstSet() {
+    const set =
+      {34: [29,30,31,32,33,34,35,36],
+       29: [22,23,24,25],
+       24: [1,2,3,4,5,6],
+       23: [1,2,3,4,5,6,7,8,9,10],
+       22: [1,2,3,4,5,6,7,8,9,10,30,31,32,33,34,35,36],
+       16: [15,16,17,18,19,20],
+       10: [1,2,3,4,5,6,7,8,9,26,27,28,29,30,31,32,33,34,35,36],
+       4: [16,17,18,19,20,21,22],
+       3: [15,16,17,18,19,20,21,22],
+       2: [14,15,16,17,18,19,20,21,22],
+       1: [13,14,15,16,17,18,19,20,21,22],
+       0: [12,13,14,15,16,17,18,19,20,21,22]
+    };
+    const translatedSet = this.translate(set);
+    return translatedSet;
+  }
+
+  populateSets() {
+
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (MapSet);
 
 
 /***/ })

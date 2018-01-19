@@ -1,2 +1,4 @@
 main page background: Andrew Hoyt - chillhammer.com
 sprites: Metroid Fusion as ripped by Valtteri
+wide 7 font https://www.dafont.com/wide-pixel-7.font
+extrude font http://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=238
