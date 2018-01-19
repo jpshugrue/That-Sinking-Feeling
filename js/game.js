@@ -77,7 +77,7 @@ class Game {
     if (player.jump) {
       if (player.yVel === 0) { player.yVel = this.MAX_JUMP_VEL; }
     }
-    this.checkForBoundaries(player);
+    this.checkForGameOver(player);
     if (!this.gameOver) {
       this.checkForCollisions(player, map);
       if (player.left || player.right) {
@@ -101,9 +101,9 @@ class Game {
     return [row + 1, column];
   }
 
-  checkForBoundaries(player) {
+  checkForGameOver(player) {
     const nextY = player.y + player.yVel;
-    if (nextY > this.BOARD_DIM - this.TILE_SIZE) {
+    if (nextY > this.BOARD_DIM - this.TILE_SIZE || nextY > this.water.level) {
       this.gameOver = true;
     }
   }
