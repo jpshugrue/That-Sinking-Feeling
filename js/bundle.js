@@ -95,7 +95,7 @@ class Game {
     this.context = canvas.getContext('2d');
 
     this.TILE_SIZE = 16;
-    this.BOARD_DIM = 800;
+    this.BOARD_DIM = 608;
     this.MAX_HORIZONTAL_VEL = 22;
     this.MAX_JUMP_VEL = -8;
     this.MAX_FALL_VEL = 32;
@@ -106,7 +106,7 @@ class Game {
 
     this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([250,400], this.TILE_SIZE);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([320,384], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -114,6 +114,9 @@ class Game {
     this.now = Date.now();
 
     this.main = this.main.bind(this);
+
+    this.background = new Image(this.boardDim, this.boardDim);
+    this.background.src = 'images/sprites/bg_orig.gif';
   }
 
   main() {
@@ -125,12 +128,17 @@ class Game {
     } else {
       this.update(timeDiff, this.player, this.map);
 
-      this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
-      this.map.render(this.context);
-      this.player.render(this.context);
+      this.render();
     }
 
     window.requestAnimationFrame(this.main);
+  }
+
+  render() {
+    this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
+    this.context.drawImage(this.background, 0, 0);
+    this.map.render(this.context);
+    this.player.render(this.context);
   }
 
   endGame() {
@@ -290,7 +298,7 @@ class Player {
   }
 
   render(context) {
-    context.fillStyle = "black";
+    context.fillStyle = "white";
     context.fillRect(this.x, this.y, this.size, this.size);
   }
 }
@@ -316,6 +324,12 @@ class Map {
     this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
     this.offSet = 0;
+    this.leftWallImg = new Image(this.tileSize, this.tileSize);
+    this.leftWallImg.src = 'images/sprites/left_wall.gif';
+    this.rightWallImg = new Image(this.tileSize, this.tileSize);
+    this.rightWallImg.src = 'images/sprites/right_wall.gif';
+    this.platformImg = new Image(this.tileSize, this.tileSize);
+    this.platformImg.src = 'images/sprites/platform.gif';
   }
 
   tile(row, col) {
@@ -360,8 +374,10 @@ class Map {
       this.rowsWoPlatform += 1;
     }
     for(let i = 0; i < this.numTiles; i++) {
-      if (i === 0 || i === this.numTiles - 1) {
-        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, "red"));
+      if (i === 0) {
+        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
+      } else if (i === this.numTiles - 1) {
+        newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
       } else {
         newRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, "blue"));
       }
@@ -379,7 +395,7 @@ class Map {
     const length = Math.floor(Math.random() * (this.numTiles / 2 - 4)) + 3;
     let platform = [];
     for (let i = 0; i < length; i++) {
-      platform.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([0, 0], true, this.tileSize, "green"));
+      platform.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([0, 0], true, this.tileSize, this.platformImg));
     }
     return platform;
   }
@@ -400,8 +416,10 @@ class Map {
         tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[41][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([375,640], false, 16, "blue");
-    this.map[42][25] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([375,656], true, 16, "green");
+    this.map[25][20] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([320,384], false, 16, "blue");
+    this.map[26][20] = new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([320,400], true, 16, this.platformImg);
+    // this.map[41][25] = new Tile([375,640], false, 16, "blue");
+    // this.map[42][25] = new Tile([375,656], true, 16, "green");
   }
 
 }
@@ -416,8 +434,8 @@ class Map {
 "use strict";
 class Tile {
 
-  constructor(position, collides, size, color) {
-    this.color = color;
+  constructor(position, collides, size, image) {
+    this.image = image;
     this.size = size;
     this.x = position[0];
     this.y = position[1];
@@ -426,8 +444,10 @@ class Tile {
 
   render(context) {
     if (this.collides) {
-      context.fillStyle = this.color;
-      context.fillRect(this.x, this.y, this.size, this.size);
+      context.drawImage(this.image, this.x, this.y);
+      // UPDATE THIS
+      // context.fillStyle = this.color;
+      // context.fillRect(this.x, this.y, this.size, this.size);
     }
   }
 

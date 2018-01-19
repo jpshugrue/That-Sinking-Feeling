@@ -12,7 +12,7 @@ class Player {
   }
 
   render(context) {
-    context.fillStyle = "black";
+    context.fillStyle = "white";
     context.fillRect(this.x, this.y, this.size, this.size);
   }
 }

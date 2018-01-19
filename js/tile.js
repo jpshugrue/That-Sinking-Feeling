@@ -1,7 +1,7 @@
 class Tile {
 
-  constructor(position, collides, size, color) {
-    this.color = color;
+  constructor(position, collides, size, image) {
+    this.image = image;
     this.size = size;
     this.x = position[0];
     this.y = position[1];
@@ -10,8 +10,10 @@ class Tile {
 
   render(context) {
     if (this.collides) {
-      context.fillStyle = this.color;
-      context.fillRect(this.x, this.y, this.size, this.size);
+      context.drawImage(this.image, this.x, this.y);
+      // UPDATE THIS
+      // context.fillStyle = this.color;
+      // context.fillRect(this.x, this.y, this.size, this.size);
     }
   }
 

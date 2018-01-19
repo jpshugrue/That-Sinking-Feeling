@@ -8,7 +8,7 @@ class Game {
     this.context = canvas.getContext('2d');
 
     this.TILE_SIZE = 16;
-    this.BOARD_DIM = 800;
+    this.BOARD_DIM = 608;
     this.MAX_HORIZONTAL_VEL = 22;
     this.MAX_JUMP_VEL = -8;
     this.MAX_FALL_VEL = 32;
@@ -19,7 +19,7 @@ class Game {
 
     this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    this.player = new Player([250,400], this.TILE_SIZE);
+    this.player = new Player([320,384], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -27,6 +27,9 @@ class Game {
     this.now = Date.now();
 
     this.main = this.main.bind(this);
+
+    this.background = new Image(this.boardDim, this.boardDim);
+    this.background.src = 'images/sprites/bg_orig.gif';
   }
 
   main() {
@@ -38,12 +41,17 @@ class Game {
     } else {
       this.update(timeDiff, this.player, this.map);
 
-      this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
-      this.map.render(this.context);
-      this.player.render(this.context);
+      this.render();
     }
 
     window.requestAnimationFrame(this.main);
+  }
+
+  render() {
+    this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
+    this.context.drawImage(this.background, 0, 0);
+    this.map.render(this.context);
+    this.player.render(this.context);
   }
 
   endGame() {

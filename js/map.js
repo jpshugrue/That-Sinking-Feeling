@@ -10,6 +10,12 @@ class Map {
     this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
     this.offSet = 0;
+    this.leftWallImg = new Image(this.tileSize, this.tileSize);
+    this.leftWallImg.src = 'images/sprites/left_wall.gif';
+    this.rightWallImg = new Image(this.tileSize, this.tileSize);
+    this.rightWallImg.src = 'images/sprites/right_wall.gif';
+    this.platformImg = new Image(this.tileSize, this.tileSize);
+    this.platformImg.src = 'images/sprites/platform.gif';
   }
 
   tile(row, col) {
@@ -54,8 +60,10 @@ class Map {
       this.rowsWoPlatform += 1;
     }
     for(let i = 0; i < this.numTiles; i++) {
-      if (i === 0 || i === this.numTiles - 1) {
-        newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, "red"));
+      if (i === 0) {
+        newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
+      } else if (i === this.numTiles - 1) {
+        newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
       } else {
         newRow.push(new Tile([i * this.tileSize, 0], false, this.tileSize, "blue"));
       }
@@ -73,7 +81,7 @@ class Map {
     const length = Math.floor(Math.random() * (this.numTiles / 2 - 4)) + 3;
     let platform = [];
     for (let i = 0; i < length; i++) {
-      platform.push(new Tile([0, 0], true, this.tileSize, "green"));
+      platform.push(new Tile([0, 0], true, this.tileSize, this.platformImg));
     }
     return platform;
   }
@@ -94,8 +102,10 @@ class Map {
         tile.y = (i-1)*this.tileSize;
       });
     }
-    this.map[41][25] = new Tile([375,640], false, 16, "blue");
-    this.map[42][25] = new Tile([375,656], true, 16, "green");
+    this.map[25][20] = new Tile([320,384], false, 16, "blue");
+    this.map[26][20] = new Tile([320,400], true, 16, this.platformImg);
+    // this.map[41][25] = new Tile([375,640], false, 16, "blue");
+    // this.map[42][25] = new Tile([375,656], true, 16, "green");
   }
 
 }
