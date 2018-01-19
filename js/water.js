@@ -14,7 +14,7 @@ class Water {
     this.waterImg = this.waterImg1;
 
     this.level = boardDim - (tileSize * 3);
-    this.speed = 20;
+    this.speed = 40;
     this.animCounter = 0;
   }
 
