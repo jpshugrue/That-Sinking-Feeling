@@ -17,6 +17,9 @@ class Game {
     this.FRICTION = 16;
     this.GRAVITY = 16;
 
+    this.score = 0;
+
+
     this.gameOver = false;
 
     this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
@@ -53,6 +56,9 @@ class Game {
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
+    this.context.font = '16px fippsregular';
+    this.context.fillStyle = "#1e2a3d";
+    this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
     if (this.gameOver) {
       this.endGame();
     }
@@ -64,6 +70,7 @@ class Game {
   }
 
   update(timeDiff, player, map) {
+    this.score += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
       player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
