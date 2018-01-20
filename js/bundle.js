@@ -86,6 +86,8 @@ $(() => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__map__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__water__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__background__ = __webpack_require__(7);
+
 
 
 
@@ -117,8 +119,7 @@ class Game {
 
     this.main = this.main.bind(this);
 
-    this.background = new Image(this.boardDim, this.boardDim);
-    this.background.src = 'images/sprites/bg_orig.gif';
+    this.background = new __WEBPACK_IMPORTED_MODULE_3__background__["a" /* default */](this.context, this.BOARD_DIM);
 
     this.water = new __WEBPACK_IMPORTED_MODULE_2__water__["a" /* default */](this.TILE_SIZE, this.BOARD_DIM, this.context);
   }
@@ -140,7 +141,7 @@ class Game {
 
   render() {
     this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
-    this.context.drawImage(this.background, 0, 0);
+    this.background.render();
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
@@ -178,6 +179,7 @@ class Game {
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
       this.water.nextPixel();
+      this.background.panBackground();
       this.player.y += 1;
     }
     this.water.update(timeDiff);
@@ -440,7 +442,7 @@ class Water {
     this.waterImg = this.waterImg1;
 
     this.level = boardDim - (tileSize);
-    this.speed = 40;
+    this.speed = 60;
     this.animCounter = 0;
   }
 
@@ -544,9 +546,10 @@ class MapSet {
   }
 
   generateFirstSet() {
-    const set =
-      {34: [29,30,31,32,33,34,35,36],
-       29: [22,23,24,25],
+    const set = {
+       36: [1,2,3],
+       34: [29,30,31,32,33,34,35,36],
+       29: [1,2,3,4,5,22,23,24,25],
        24: [1,2,3,4,5,6],
        23: [1,2,3,4,5,6,7,8,9,10],
        22: [1,2,3,4,5,6,7,8,9,10,30,31,32,33,34,35,36],
@@ -565,17 +568,79 @@ class MapSet {
 
   populateSets() {
     let sets = [];
-    sets.push({
-      35: [28,29,30,31,32],
-      30: [1,2,3,4,5,6,7],
-      29: [21,22,23,24],
-      22: [27,28,29,30,31],
-      21: [1,2,3,4,5,6,7],
-      14: [22,23,24,25,26],
+    sets.push(
+    {
+      33: [28,29,30,31,32],
+      32: [1,2,3,4,5,6,7],
+      27: [21,22,23,24],
+      26: [1,2,3,4,5,6,7],
+      20: [27,28,29,30,31],
+      19: [1,2,3,4,5,6,7],
+      13: [22,23,24,25,26],
       12: [1,2,3,4,5,6,7],
       7: [15,16,17,18,19],
       0: [13,14,15,16,17,18,19,20,21,22,23]
-    });
+    },
+    {
+      35: [3,4,5,32,33,34],
+      34: [3,34],
+      33: [3,34],
+      32: [3,34],
+      31: [3,4,5,6,31,32,33,34],
+      30: [17,18,19],
+      24: [7,8,9,10,11,25,26,27,28,29],
+      20: [18],
+      19: [17,18,19],
+      18: [16,17,18,19,20],
+      17: [15,16,17,18,19,20,21],
+      16: [16,17,18,19,20],
+      15: [17,18,19],
+      14: [18],
+      13: [1,2,3,4,33,34,35,36],
+      12: [1,2,3,4,5,32,33,34,35,36],
+      11: [1,2,3,4,5,6,31,32,33,34,35,36],
+      10: [1,2,3,4,5,6,7,30,31,32,33,34,35,36],
+      9: [1,2,3,4,5,6,7,8,29,30,31,32,33,34,35,36],
+      8: [1,2,3,4,5,6,7,8,9,28,29,30,31,32,33,34,35,36],
+      7: [1,2,3,4,5,6,7,8,9,10,27,28,29,30,31,32,33,34,35,36],
+      6: [1,2,3,4,5,6,7,8,9,10,11,26,27,28,29,30,31,32,33,34,35,36],
+      0: [13,14,15,16,17,18,19,20,21,22,23]
+    },
+    {
+      35: [9,10,11,12,13,14,23,24,25,26,27,28],
+      29: [16,17,18,19,20,21,22],
+      22: [23,24,25,26,27,28],
+      21: [9,10,11,12,13,14],
+      14: [16,17,18,19,20,21,22],
+      7: [9,10,11,12,13,14,15],
+      0: [13,14,15,16,17,18,19,20,21,22,23]
+    },
+    {
+      35: [1,2,3,4,33,34,35,36],
+      29: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
+      23: [7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+      16: [1,2,3,4,5,6,7,30,31,32,33,34,35,36],
+      15: [7,8,29,30],
+      14: [8,9,28,29],
+      13: [9,10,27,28],
+      12: [10,11,26,27],
+      11: [11,12,25,26],
+      10: [12,13,24,25],
+      9: [13,14,23,24],
+      8: [14,15,22,23],
+      7: [15,16,21,22],
+      6: [16,17,20,21],
+      0: [13,14,15,16,17,18,19,20,21,22,23]
+    },
+      {
+        33: [7,8,9,29,30,31],
+        28: [1,2,35,36],
+        21: [10,11,28,29],
+        14: [1,2,3,18,19,20,34,35,36],
+        7: [13,14,15,22,23,24],
+        0: [13,14,15,16,17,18,19,20,21,22,23]
+      }
+    );
     sets = sets.map(this.translate.bind(this));
     return sets;
   }
@@ -583,6 +648,52 @@ class MapSet {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (MapSet);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Background {
+
+  constructor(context, boardDim) {
+    this.context = context;
+    this.boardDim = boardDim;
+
+    this.bg1 = new Image(this.boardDim, this.boardDim);
+    this.bg1.src = 'images/sprites/bg_orig.gif';
+    this.bg1y = 0;
+
+    this.bg2 = new Image(this.boardDim, this.boardDim);
+    this.bg2.src = 'images/sprites/bg_orig.gif';
+    this.bg2y = -this.boardDim;
+
+    this.pixelCount = 0;
+  }
+
+  render() {
+    this.context.drawImage(this.bg1, 0, this.bg1y);
+    this.context.drawImage(this.bg2, 0, this.bg2y);
+  }
+
+  panBackground() {
+    this.pixelCount += 1;
+    if (this.pixelCount > 3) {
+      this.pixelCount = 0;
+      this.bg1y += 1;
+      this.bg2y += 1;
+      if (this.bg1y >= this.boardDim) {
+        this.bg1y = -this.boardDim;
+      } else if(this.bg2y >= this.boardDim) {
+        this.bg2y = -this.boardDim;
+      }
+    }
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Background);
 
 
 /***/ })
