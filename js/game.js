@@ -6,9 +6,6 @@ import Background from './background';
 class Game {
 
   constructor() {
-    const canvas = document.getElementById('gameCanvas');
-    this.context = canvas.getContext('2d');
-
     this.TILE_SIZE = 16;
     this.BOARD_DIM = 608;
     this.MAX_HORIZONTAL_VEL = 22;
@@ -18,26 +15,33 @@ class Game {
     this.GRAVITY = 16;
     this.FRAME = 1/60;
 
-    this.score = 0;
-    this.timeDiff = 0;
-
-
-    this.gameOver = false;
-
-    this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
-    this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    this.player = new Player([330,500], this.TILE_SIZE);
+    const canvas = document.getElementById('gameCanvas');
+    this.context = canvas.getContext('2d');
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
-    this.now = Date.now();
-
     this.main = this.main.bind(this);
+  }
 
-    this.background = new Background(this.context, this.BOARD_DIM);
-
-    this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
+  newGame() {
+    this.score = 0;
+    this.timeDiff = 0;
+    this.gameOver = false;
+    if (this.map) {
+      this.map.reset();
+      this.player.reset([330,500]);
+      this.background.reset();
+      this.water.reset();
+    } else {
+      this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
+      this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
+      this.player = new Player([330,500], this.TILE_SIZE);
+      this.background = new Background(this.context, this.BOARD_DIM);
+      this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
+    }
+    this.now = Date.now();
+    this.main();
   }
 
   main() {
@@ -45,7 +49,6 @@ class Game {
     this.now = Date.now();
     this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
     while(this.timeDiff > this.FRAME) {
-      // console.log(this.FRAME);
       this.timeDiff = this.timeDiff - this.FRAME;
       if (!this.gameOver) {
         this.update(this.FRAME, this.player, this.map);
@@ -54,50 +57,6 @@ class Game {
     }
     this.render();
     window.requestAnimationFrame(this.main);
-  }
-
-  newGame() {
-    this.score = 0;
-    this.timeDiff = 0;
-    this.gameOver = false;
-    this.map.reset();
-    this.player.reset([330,500]);
-    this.background.reset();
-    this.water.reset();
-    this.main();
-  }
-
-  render() {
-    this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
-    this.background.render();
-    this.map.render(this.context);
-    this.player.render(this.context);
-    this.water.render();
-    if (this.gameOver) {
-      this.endGame();
-    } else {
-      this.context.textAlign = "left";
-      this.context.font = '16px fippsregular';
-      this.context.fillStyle = "#1e2a3d";
-      this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
-    }
-  }
-
-  endGame() {
-    this.context.font = "42px press_start_2pregular";
-    this.context.strokeStyle = "black";
-    this.context.lineWidth = 6;
-    this.context.textAlign = "center";
-    this.context.strokeText("Game Over",this.BOARD_DIM/2,200);
-    this.context.fillText("Game Over",this.BOARD_DIM/2,200);
-    this.context.font = "24px press_start_2pregular";
-    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
-    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
-    this.context.font = "18px press_start_2pregular";
-    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
-    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
-    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
-    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
   }
 
   update(timeDiff, player, map) {
@@ -131,7 +90,22 @@ class Game {
       this.background.panBackground();
       this.player.y += 1;
     }
+  }
 
+  render() {
+    this.context.clearRect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
+    this.background.render();
+    this.map.render(this.context);
+    this.player.render(this.context);
+    this.water.render();
+    if (this.gameOver) {
+      this.endGame();
+    } else {
+      this.context.textAlign = "left";
+      this.context.font = '16px fippsregular';
+      this.context.fillStyle = "#1e2a3d";
+      this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
+    }
   }
 
   getTilePos(x, y) {
@@ -196,11 +170,6 @@ class Game {
     }
   }
 
-  isStanding(player, map) {
-    const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
-    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || this.map.tile(tilePos[0]+1, tilePos[1]+1).collides);
-  }
-
   handleGravity(timeDiff, player, map) {
     if (this.isStanding(player, map)) {
       player.yVel = 0;
@@ -210,6 +179,28 @@ class Game {
         player.yVel = this.MAX_FALL_VEL;
       }
     }
+  }
+
+  isStanding(player, map) {
+    const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
+    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || this.map.tile(tilePos[0]+1, tilePos[1]+1).collides);
+  }
+
+  endGame() {
+    this.context.font = "42px press_start_2pregular";
+    this.context.strokeStyle = "black";
+    this.context.lineWidth = 6;
+    this.context.textAlign = "center";
+    this.context.strokeText("Game Over",this.BOARD_DIM/2,200);
+    this.context.fillText("Game Over",this.BOARD_DIM/2,200);
+    this.context.font = "24px press_start_2pregular";
+    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.font = "18px press_start_2pregular";
+    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
   }
 
   keyPress(event, pressed) {
@@ -233,7 +224,6 @@ class Game {
         } else {
           this.player.jump = pressed;
         }
-
     }
   }
 
