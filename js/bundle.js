@@ -108,7 +108,7 @@ class Game {
 
     this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
     this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,508], this.TILE_SIZE);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,500], this.TILE_SIZE);
 
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
@@ -331,15 +331,8 @@ class Map {
     this.context = context;
     this.map = [];
     this.mapSet = new __WEBPACK_IMPORTED_MODULE_1__mapSet__["a" /* default */](this.tileSize, this.boardDim);
-    // this.rowsWoPlatform = 0;
     this.numTiles = this.boardDim / this.tileSize;
     this.offSet = 0;
-    // this.leftWallImg = new Image(this.tileSize, this.tileSize);
-    // this.leftWallImg.src = 'images/sprites/left_wall.gif';
-    // this.rightWallImg = new Image(this.tileSize, this.tileSize);
-    // this.rightWallImg.src = 'images/sprites/right_wall.gif';
-    // this.platformImg = new Image(this.tileSize, this.tileSize);
-    // this.platformImg.src = 'images/sprites/platform.gif';
   }
 
   tile(row, col) {
@@ -371,44 +364,6 @@ class Map {
       this.nextRow();
     }
   }
-  //
-  // generateRow() {
-  //   let newRow = [];
-  //   let platform, platformPos;
-  //   if (this.rowsWoPlatform > 4 || Math.random() < 0.2) {
-  //     platform = this.generatePlatform();
-  //     platformPos = Math.floor(Math.random() * (this.numTiles - platform.length));
-  //     if (platformPos < 0) { platformPos = 0; }
-  //     this.rowsWoPlatform = 0;
-  //   } else {
-  //     this.rowsWoPlatform += 1;
-  //   }
-  //   for(let i = 0; i < this.numTiles; i++) {
-  //     if (i === 0) {
-  //       newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
-  //     } else if (i === this.numTiles - 1) {
-  //       newRow.push(new Tile([i * this.tileSize, 0], true, this.tileSize, this.rightWallImg));
-  //     } else {
-  //       newRow.push(new Tile([i * this.tileSize, 0], false, this.tileSize, "blue"));
-  //     }
-  //   }
-  //   if (platform) {
-  //     for(let i = 0; i < platform.length; i++) {
-  //       platform[i].x = this.tileSize * (platformPos + i);
-  //       newRow[platformPos + i] = platform[i];
-  //     }
-  //   }
-  //   return newRow;
-  // }
-  //
-  // generatePlatform() {
-  //   const length = Math.floor(Math.random() * (this.numTiles / 2 - 4)) + 3;
-  //   let platform = [];
-  //   for (let i = 0; i < length; i++) {
-  //     platform.push(new Tile([0, 0], true, this.tileSize, this.platformImg));
-  //   }
-  //   return platform;
-  // }
 
   render() {
     this.map.forEach((row) => {
@@ -419,19 +374,13 @@ class Map {
   }
 
   generateMap(boardDim, tileSize) {
-
     this.map = [];
     for(let i = 0; i <= this.numTiles; i++) {
-      // this.map.push(this.generateRow());
-      this.map.push(this.mapSet.getRow());
-      this.map[i].forEach((tile) => {
-        tile.y = (i-1)*this.tileSize;
+      this.map.unshift(this.mapSet.getRow());
+      this.map[0].forEach((tile) => {
+        tile.y = this.boardDim - ((i+1) * this.tileSize);
       });
     }
-    // this.map[25][20] = new Tile([320,384], false, 16, "blue");
-    // this.map[26][20] = new Tile([320,400], true, 16, this.platformImg);
-    // this.map[41][25] = new Tile([375,640], false, 16, "blue");
-    // this.map[42][25] = new Tile([375,656], true, 16, "green");
   }
 
 }
@@ -552,22 +501,18 @@ class MapSet {
 
     this.allSets = this.populateSets();
     this.set = this.generateFirstSet();
-    // debugger
-
-
-    // this.generateBlankRow = this.generateBlankRow.bind(this);
   }
 
   getRow() {
-    // debugger
     if (this.set.length === 0) {
-      this.set = this.generateSet();
+      this.set = this.generateSet().slice();
     }
-    return this.set.pop();
+    return this.set.shift();
   }
 
   generateSet() {
-    //select randomly from allSets and return picked set
+    const randIdx = Math.floor(Math.random() * this.allSets.length);
+    return this.allSets[randIdx];
   }
 
   translate(set) {
@@ -575,22 +520,18 @@ class MapSet {
     for(let i = 0; i <= this.numTiles; i++) {
       const tempRow = this.generateBlankRow();
       if (Object.keys(set).includes(`${i}`)) {
-        // debugger
         set[`${i}`].forEach((col) => {
           tempRow[col].collides = true;
         });
       }
       translation.push(tempRow);
     }
-    // debugger
     return translation;
   }
 
   generateBlankRow() {
-    // debugger
     const blankRow = [];
     for(let i = 0; i < this.numTiles; i++) {
-      // debugger
       if (i === 0) {
         blankRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], true, this.tileSize, this.leftWallImg));
       } else if(i === this.numTiles - 1) {
@@ -599,7 +540,6 @@ class MapSet {
         blankRow.push(new __WEBPACK_IMPORTED_MODULE_0__tile__["a" /* default */]([i * this.tileSize, 0], false, this.tileSize, this.platformImg));
       }
     }
-    // debugger
     return blankRow;
   }
 
@@ -619,11 +559,25 @@ class MapSet {
        0: [12,13,14,15,16,17,18,19,20,21,22]
     };
     const translatedSet = this.translate(set);
+    // debugger
     return translatedSet;
   }
 
   populateSets() {
-
+    let sets = [];
+    sets.push({
+      35: [28,29,30,31,32],
+      30: [1,2,3,4,5,6,7],
+      29: [21,22,23,24],
+      22: [27,28,29,30,31],
+      21: [1,2,3,4,5,6,7],
+      14: [22,23,24,25,26],
+      12: [1,2,3,4,5,6,7],
+      7: [15,16,17,18,19],
+      0: [13,14,15,16,17,18,19,20,21,22,23]
+    });
+    sets = sets.map(this.translate.bind(this));
+    return sets;
   }
 
 }
