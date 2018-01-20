@@ -13,6 +13,12 @@ class Map {
     this.offSet = 0;
   }
 
+  reset() {
+    this.offSet = 0;
+    this.mapSet.reset();
+    this.generateMap(this.boardDim, this.tileSize);
+  }
+
   tile(row, col) {
     return this.map[row][col];
   }

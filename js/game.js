@@ -16,8 +16,10 @@ class Game {
     this.MAX_FALL_VEL = 32;
     this.FRICTION = 16;
     this.GRAVITY = 16;
+    this.FRAME = 1/60;
 
     this.score = 0;
+    this.timeDiff = 0;
 
 
     this.gameOver = false;
@@ -41,13 +43,28 @@ class Game {
   main() {
     let then = this.now;
     this.now = Date.now();
-    let timeDiff = (this.now - then) / 1000.0;
-    if (!this.gameOver) {
-      this.update(timeDiff, this.player, this.map);
+    this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
+    while(this.timeDiff > this.FRAME) {
+      // console.log(this.FRAME);
+      this.timeDiff = this.timeDiff - this.FRAME;
+      if (!this.gameOver) {
+        this.update(this.FRAME, this.player, this.map);
+      }
+      this.water.update(this.FRAME);
     }
-    this.water.update(timeDiff);
     this.render();
     window.requestAnimationFrame(this.main);
+  }
+
+  newGame() {
+    this.score = 0;
+    this.timeDiff = 0;
+    this.gameOver = false;
+    this.map.reset();
+    this.player.reset([330,500]);
+    this.background.reset();
+    this.water.reset();
+    this.main();
   }
 
   render() {
@@ -59,6 +76,7 @@ class Game {
     if (this.gameOver) {
       this.endGame();
     } else {
+      this.context.textAlign = "left";
       this.context.font = '16px fippsregular';
       this.context.fillStyle = "#1e2a3d";
       this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
@@ -66,7 +84,6 @@ class Game {
   }
 
   endGame() {
-
     this.context.font = "42px press_start_2pregular";
     this.context.strokeStyle = "black";
     this.context.lineWidth = 6;
@@ -76,6 +93,11 @@ class Game {
     this.context.font = "24px press_start_2pregular";
     this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
     this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.font = "18px press_start_2pregular";
+    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
   }
 
   update(timeDiff, player, map) {
@@ -206,7 +228,12 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        this.player.jump = pressed;
+        if (this.gameOver) {
+          this.newGame();
+        } else {
+          this.player.jump = pressed;
+        }
+
     }
   }
 

@@ -105,8 +105,10 @@ class Game {
     this.MAX_FALL_VEL = 32;
     this.FRICTION = 16;
     this.GRAVITY = 16;
+    this.FRAME = 1/60;
 
     this.score = 0;
+    this.timeDiff = 0;
 
 
     this.gameOver = false;
@@ -130,13 +132,28 @@ class Game {
   main() {
     let then = this.now;
     this.now = Date.now();
-    let timeDiff = (this.now - then) / 1000.0;
-    if (!this.gameOver) {
-      this.update(timeDiff, this.player, this.map);
+    this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
+    while(this.timeDiff > this.FRAME) {
+      // console.log(this.FRAME);
+      this.timeDiff = this.timeDiff - this.FRAME;
+      if (!this.gameOver) {
+        this.update(this.FRAME, this.player, this.map);
+      }
+      this.water.update(this.FRAME);
     }
-    this.water.update(timeDiff);
     this.render();
     window.requestAnimationFrame(this.main);
+  }
+
+  newGame() {
+    this.score = 0;
+    this.timeDiff = 0;
+    this.gameOver = false;
+    this.map.reset();
+    this.player.reset([330,500]);
+    this.background.reset();
+    this.water.reset();
+    this.main();
   }
 
   render() {
@@ -148,6 +165,7 @@ class Game {
     if (this.gameOver) {
       this.endGame();
     } else {
+      this.context.textAlign = "left";
       this.context.font = '16px fippsregular';
       this.context.fillStyle = "#1e2a3d";
       this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
@@ -155,7 +173,6 @@ class Game {
   }
 
   endGame() {
-
     this.context.font = "42px press_start_2pregular";
     this.context.strokeStyle = "black";
     this.context.lineWidth = 6;
@@ -165,6 +182,11 @@ class Game {
     this.context.font = "24px press_start_2pregular";
     this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
     this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.font = "18px press_start_2pregular";
+    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
+    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
   }
 
   update(timeDiff, player, map) {
@@ -295,7 +317,12 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        this.player.jump = pressed;
+        if (this.gameOver) {
+          this.newGame();
+        } else {
+          this.player.jump = pressed;
+        }
+
     }
   }
 
@@ -326,6 +353,16 @@ class Player {
     context.fillStyle = "white";
     context.fillRect(this.x, this.y, this.size, this.size);
   }
+
+  reset(startingPos) {
+    this.x = startingPos[0];
+    this.y = startingPos[1];
+    this.xVel = 0;
+    this.yVel = 0;
+    this.left = false;
+    this.right = false;
+    this.jump = false;
+  }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Player);
@@ -351,6 +388,12 @@ class Map {
     this.mapSet = new __WEBPACK_IMPORTED_MODULE_1__mapSet__["a" /* default */](this.tileSize, this.boardDim);
     this.numTiles = this.boardDim / this.tileSize;
     this.offSet = 0;
+  }
+
+  reset() {
+    this.offSet = 0;
+    this.mapSet.reset();
+    this.generateMap(this.boardDim, this.tileSize);
   }
 
   tile(row, col) {
@@ -458,8 +501,14 @@ class Water {
     this.waterImg = this.waterImg1;
 
     this.level = boardDim - (tileSize);
-    this.speed = 60;
+    this.speed = 70;
     this.animCounter = 0;
+  }
+
+  reset() {
+    this.level = this.boardDim - (this.tileSize);
+    this.animCounter = 0;
+    this.waterImg = this.waterImg1;
   }
 
   update(timeDiff) {
@@ -522,6 +571,10 @@ class MapSet {
     this.platformImg.src = 'images/sprites/platform.gif';
 
     this.allSets = this.populateSets();
+    this.set = this.generateFirstSet();
+  }
+
+  reset() {
     this.set = this.generateFirstSet();
   }
 
@@ -695,6 +748,12 @@ class Background {
   render() {
     this.context.drawImage(this.bg1, 0, this.bg1y);
     this.context.drawImage(this.bg2, 0, this.bg2y);
+  }
+
+  reset() {
+    this.pixelCount = 0;
+    this.bg1y = 0;
+    this.bg2y = -this.boardDim;
   }
 
   panBackground() {

@@ -15,6 +15,16 @@ class Player {
     context.fillStyle = "white";
     context.fillRect(this.x, this.y, this.size, this.size);
   }
+
+  reset(startingPos) {
+    this.x = startingPos[0];
+    this.y = startingPos[1];
+    this.xVel = 0;
+    this.yVel = 0;
+    this.left = false;
+    this.right = false;
+    this.jump = false;
+  }
 }
 
 export default Player;

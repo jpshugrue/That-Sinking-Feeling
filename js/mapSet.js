@@ -18,6 +18,10 @@ class MapSet {
     this.set = this.generateFirstSet();
   }
 
+  reset() {
+    this.set = this.generateFirstSet();
+  }
+
   getRow() {
     if (this.set.length === 0) {
       this.set = this.generateSet().slice();

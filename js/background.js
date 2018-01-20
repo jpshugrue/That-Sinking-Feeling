@@ -20,6 +20,12 @@ class Background {
     this.context.drawImage(this.bg2, 0, this.bg2y);
   }
 
+  reset() {
+    this.pixelCount = 0;
+    this.bg1y = 0;
+    this.bg2y = -this.boardDim;
+  }
+
   panBackground() {
     this.pixelCount += 1;
     if (this.pixelCount > 3) {
