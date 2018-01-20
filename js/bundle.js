@@ -128,14 +128,11 @@ class Game {
     let then = this.now;
     this.now = Date.now();
     let timeDiff = (this.now - then) / 1000.0;
-    if (this.gameOver) {
-      this.endGame();
-    } else {
+    if (!this.gameOver) {
       this.update(timeDiff, this.player, this.map);
-
-      this.render();
     }
-
+    this.water.update(timeDiff);
+    this.render();
     window.requestAnimationFrame(this.main);
   }
 
@@ -145,6 +142,9 @@ class Game {
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
+    if (this.gameOver) {
+      this.endGame();
+    }
   }
 
   endGame() {
@@ -182,7 +182,7 @@ class Game {
       this.background.panBackground();
       this.player.y += 1;
     }
-    this.water.update(timeDiff);
+
   }
 
   getTilePos(x, y) {
@@ -447,7 +447,11 @@ class Water {
   }
 
   update(timeDiff) {
-    this.level -= timeDiff * this.speed;
+    if (this.level <= 0) {
+      this.level = 0;
+    } else {
+      this.level -= timeDiff * this.speed;
+    }
     this.animCounter += timeDiff;
     if (this.animCounter > 1) {
       this.animCounter = 0;

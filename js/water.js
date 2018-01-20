@@ -19,7 +19,11 @@ class Water {
   }
 
   update(timeDiff) {
-    this.level -= timeDiff * this.speed;
+    if (this.level <= 0) {
+      this.level = 0;
+    } else {
+      this.level -= timeDiff * this.speed;
+    }
     this.animCounter += timeDiff;
     if (this.animCounter > 1) {
       this.animCounter = 0;
