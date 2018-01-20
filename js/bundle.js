@@ -145,17 +145,26 @@ class Game {
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
-    this.context.font = '16px fippsregular';
-    this.context.fillStyle = "#1e2a3d";
-    this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
     if (this.gameOver) {
       this.endGame();
+    } else {
+      this.context.font = '16px fippsregular';
+      this.context.fillStyle = "#1e2a3d";
+      this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
     }
   }
 
   endGame() {
-    this.context.font = "30px Arial";
-    this.context.fillText("Game Over",200,200);
+
+    this.context.font = "42px press_start_2pregular";
+    this.context.strokeStyle = "black";
+    this.context.lineWidth = 6;
+    this.context.textAlign = "center";
+    this.context.strokeText("Game Over",this.BOARD_DIM/2,200);
+    this.context.fillText("Game Over",this.BOARD_DIM/2,200);
+    this.context.font = "24px press_start_2pregular";
+    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
   }
 
   update(timeDiff, player, map) {
