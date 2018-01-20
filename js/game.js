@@ -2,6 +2,8 @@ import Player from './player';
 import Map from './map';
 import Water from './water';
 import Background from './background';
+import * as firebase from 'firebase';
+import 'firebase/database';
 
 class Game {
 
@@ -21,6 +23,19 @@ class Game {
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
+    const config = {
+      apiKey: "AIzaSyCMiP-QRvxlqRzhay6gmuQTJNgGWinwOuM",
+      authDomain: "that-sinking-feeling.firebaseapp.com",
+      databaseURL: "https://that-sinking-feeling.firebaseio.com",
+      projectId: "that-sinking-feeling",
+      storageBucket: "that-sinking-feeling.appspot.com",
+      messagingSenderId: "676176501519"
+    };
+    firebase.initializeApp(config);
+    this.database = firebase.database();
+    const dbref = this.database.ref().child('highscores');
+    dbref.on('value', snapshot => this.highscores = snapshot.val());
+
     this.main = this.main.bind(this);
   }
 
@@ -28,6 +43,7 @@ class Game {
     this.score = 0;
     this.timeDiff = 0;
     this.gameOver = false;
+    this.highScoreStored = false;
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
@@ -52,6 +68,10 @@ class Game {
       this.timeDiff = this.timeDiff - this.FRAME;
       if (!this.gameOver) {
         this.update(this.FRAME, this.player, this.map);
+      } else if (!this.highScoreStored){
+        firebase.auth().signInAnonymously();
+        this.storeHighScore();
+        this.highScoreStored = true;
       }
       this.water.update(this.FRAME);
     }
@@ -201,6 +221,36 @@ class Game {
     this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
     this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
     this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+  }
+
+  storeHighScore() {
+    console.log(this.highscores);
+    const dateTime = Date.now();
+    if (Object.keys(this.highscores).length < 10) {
+      this.database.ref('highscores/' + dateTime).set({
+        score: this.score,
+        date: dateTime,
+        name: "testName"
+      });
+    } else {
+      let minScore;
+      let minId;
+      let currentScore;
+      Object.keys(this.highscores).forEach((timeStamp) => {
+        currentScore = this.highscores[timeStamp].score;
+        if (!minScore || currentScore < minScore) {
+          minScore = currentScore;
+          minId = timeStamp;
+        }
+      });
+      this.database.ref('highscores/' + minId).remove();
+      this.database.ref('highscores/' + dateTime).set({
+        score: this.score,
+        date: dateTime,
+        name: "replaceName"
+      });
+      console.log("Replaced an entry");
+    }
   }
 
   keyPress(event, pressed) {
