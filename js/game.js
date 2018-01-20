@@ -34,9 +34,21 @@ class Game {
     firebase.initializeApp(config);
     this.database = firebase.database();
     const dbref = this.database.ref().child('highscores');
-    dbref.on('value', snapshot => this.highscores = snapshot.val());
+    dbref.on('value', (snapshot) => {
+      this.sortHighScores(snapshot.val());
+    });
 
     this.main = this.main.bind(this);
+  }
+
+  sortHighScores(snapshot) {
+    this.highscores = Object.keys(snapshot).sort((a,b) => {
+      return snapshot[a].score - snapshot[b].score;
+    });
+    this.highscores.forEach((id, idx) => {
+      this.highscores[idx] = snapshot[id];
+    });
+    console.log(this.highscores);
   }
 
   newGame() {
@@ -44,6 +56,7 @@ class Game {
     this.timeDiff = 0;
     this.gameOver = false;
     this.highScoreStored = false;
+    this.newHighScore = false;
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
@@ -70,7 +83,7 @@ class Game {
         this.update(this.FRAME, this.player, this.map);
       } else if (!this.highScoreStored){
         firebase.auth().signInAnonymously();
-        this.storeHighScore();
+        this.checkHighScore();
         this.highScoreStored = true;
       }
       this.water.update(this.FRAME);
@@ -217,40 +230,69 @@ class Game {
     this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
     this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
     this.context.font = "18px press_start_2pregular";
-    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
-    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
-    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
-    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+    // if (this.newHighScore) {
+    //   this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,300);
+    //   this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,300);
+    // } else {
+      this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
+      this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
+      this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+      this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
+      // this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,350);
+      // this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,330);
+      // Object.values(this.highscores)
+    // }
   }
 
-  storeHighScore() {
-    console.log(this.highscores);
-    const dateTime = Date.now();
+  checkHighScore() {
     if (Object.keys(this.highscores).length < 10) {
-      this.database.ref('highscores/' + dateTime).set({
-        score: this.score,
-        date: dateTime,
-        name: "testName"
-      });
-    } else {
-      let minScore;
-      let minId;
-      let currentScore;
-      Object.keys(this.highscores).forEach((timeStamp) => {
-        currentScore = this.highscores[timeStamp].score;
-        if (!minScore || currentScore < minScore) {
-          minScore = currentScore;
-          minId = timeStamp;
-        }
-      });
-      this.database.ref('highscores/' + minId).remove();
-      this.database.ref('highscores/' + dateTime).set({
-        score: this.score,
-        date: dateTime,
-        name: "replaceName"
-      });
-      console.log("Replaced an entry");
+      this.newHighScore = true;
     }
+    let minScore;
+    let minId;
+    let currentScore;
+    Object.keys(this.highscores).forEach((timeStamp) => {
+      currentScore = this.highscores[timeStamp].score;
+      if (!minScore || currentScore < minScore) {
+        minScore = currentScore;
+        minId = timeStamp;
+      }
+    });
+    if (this.score > minScore) {
+      this.newHighScore = true;
+    }
+  }
+  //   console.log(this.highscores);
+  //   const dateTime = Date.now();
+  //   if (Object.keys(this.highscores).length < 10) {
+  //     this.database.ref('highscores/' + dateTime).set({
+  //       score: this.score,
+  //       date: dateTime,
+  //       name: "testName"
+  //     });
+  //   } else {
+  //     let minScore;
+  //     let minId;
+  //     let currentScore;
+  //     Object.keys(this.highscores).forEach((timeStamp) => {
+  //       currentScore = this.highscores[timeStamp].score;
+  //       if (!minScore || currentScore < minScore) {
+  //         minScore = currentScore;
+  //         minId = timeStamp;
+  //       }
+  //     });
+  //     this.database.ref('highscores/' + minId).remove();
+  //     this.database.ref('highscores/' + dateTime).set({
+  //       score: this.score,
+  //       date: dateTime,
+  //       name: "replaceName"
+  //     });
+  //     console.log("Replaced an entry");
+  //   }
+  // }
+
+  updateHighScore() {
+
   }
 
   keyPress(event, pressed) {
@@ -271,8 +313,15 @@ class Game {
         event.preventDefault();
         if (this.gameOver) {
           this.newGame();
+        } else if (this.newHighScore) {
+          this.highScoreName += " ";
         } else {
           this.player.jump = pressed;
+        }
+        break;
+      default:
+        if (this.newHighScore && event.key.length === 1) {
+          this.highScoreName += event.key;
         }
     }
   }
