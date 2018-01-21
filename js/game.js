@@ -16,6 +16,13 @@ class Game {
     this.FRICTION = 16;
     this.GRAVITY = 16;
     this.FRAME = 1/60;
+    this.splashScreen = true;
+    this.leftArrowImg = new Image(46, 46);
+    this.leftArrowImg.src = 'images/sprites/left-arrow.png';
+    this.rightArrowImg = new Image(46, 46);
+    this.rightArrowImg.src = 'images/sprites/right-arrow.png';
+    this.spacebarImg = new Image(274, 40);
+    this.spacebarImg.src = 'images/sprites/spacebar.png';
 
     const canvas = document.getElementById('gameCanvas');
     this.context = canvas.getContext('2d');
@@ -39,19 +46,7 @@ class Game {
     });
 
     this.main = this.main.bind(this);
-  }
-
-  sortHighScores(snapshot) {
-    if (snapshot) {
-      this.highscores = Object.keys(snapshot).sort((a,b) => {
-        return snapshot[a].score - snapshot[b].score;
-      });
-      this.highscores.forEach((id, idx) => {
-        this.highscores[idx] = snapshot[id];
-      });
-    } else {
-      this.highscores = [];
-    }
+    this.displaySplashScreen = this.displaySplashScreen.bind(this);
   }
 
   newGame() {
@@ -75,7 +70,11 @@ class Game {
       this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
     }
     this.now = Date.now();
-    this.main();
+    if (this.splashScreen) {
+      this.displaySplashScreen();
+    } else {
+      this.main();
+    }
   }
 
   main() {
@@ -96,6 +95,82 @@ class Game {
     }
     this.render();
     window.requestAnimationFrame(this.main);
+  }
+
+  displaySplashScreen() {
+    this.render();
+    window.requestAnimationFrame(this.displaySplashScreen);
+    this.context.save();
+    this.context.globalAlpha = 0.7;
+    this.context.rect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
+    this.context.fill();
+    this.context.restore();
+
+    this.context.strokeStyle = "white";
+    this.context.lineWidth = 3;
+    this.context.beginPath();
+    this.context.moveTo(this.BOARD_DIM/3, 80);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 80);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.moveTo(this.BOARD_DIM/3, 255);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 255);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.moveTo(this.BOARD_DIM/3, 440);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 440);
+    this.context.stroke();
+
+    this.context.font = "18px press_start_2pregular";
+    this.context.strokeStyle = "black";
+    this.context.lineWidth = 6;
+    this.context.textAlign = "center";
+    this.context.fillStyle = "white";
+    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,30);
+    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,30);
+    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,60);
+    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,60);
+
+    this.context.strokeText(`How To Play`,this.BOARD_DIM/2,120);
+    this.context.fillText(`How To Play`,this.BOARD_DIM/2,120);
+
+    this.context.strokeText(`The Story So Far`,this.BOARD_DIM/2,295);
+    this.context.fillText(`The Story So Far`,this.BOARD_DIM/2,295);
+
+    this.context.strokeText(`Our Intrepid`,this.BOARD_DIM/3*2,500);
+    this.context.fillText(`Our Intrepid`,this.BOARD_DIM/3*2,500);
+    this.context.strokeText(`Protagonist`,this.BOARD_DIM/3*2,530);
+    this.context.fillText(`Protagonist`,this.BOARD_DIM/3*2,530);
+
+    this.context.font = "12px press_start_2pregular";
+    this.context.strokeText(`Use The Arrow Keys`,this.BOARD_DIM/4,150);
+    this.context.fillText(`Use The Arrow Keys`,this.BOARD_DIM/4,150);
+    this.context.strokeText(`To Move`,this.BOARD_DIM/4,175);
+    this.context.fillText(`To Move`,this.BOARD_DIM/4,175);
+    this.context.drawImage(this.leftArrowImg, this.BOARD_DIM/4 - 69, 190);
+    this.context.drawImage(this.rightArrowImg, this.BOARD_DIM/4 + 23, 190);
+
+    this.context.strokeText(`Use The Space Bar`,this.BOARD_DIM/4*3,150);
+    this.context.fillText(`Use The Space Bar`,this.BOARD_DIM/4*3,150);
+    this.context.strokeText(`To Jump`,this.BOARD_DIM/4*3,175);
+    this.context.fillText(`To Jump`,this.BOARD_DIM/4*3,175);
+    this.context.drawImage(this.spacebarImg, this.BOARD_DIM/4*3-137, 190);
+
+    this.context.strokeText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,320);
+    this.context.fillText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,320);
+    this.context.strokeText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,345);
+    this.context.fillText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,345);
+    this.context.strokeText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,370);
+    this.context.fillText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,370);
+    this.context.strokeText(`Outrun the rising water to make it`,this.BOARD_DIM/2,395);
+    this.context.fillText(`Outrun the rising water to make it`,this.BOARD_DIM/2,395);
+    this.context.strokeText(`to the surface`,this.BOARD_DIM/2,420);
+    this.context.fillText(`to the surface`,this.BOARD_DIM/2,420);
+
+    this.context.rect(this.BOARD_DIM/4, 480, 50, 50);
+    this.context.fill();
   }
 
   update(timeDiff, player, map) {
@@ -279,6 +354,19 @@ class Game {
     });
   }
 
+  sortHighScores(snapshot) {
+    if (snapshot) {
+      this.highscores = Object.keys(snapshot).sort((a,b) => {
+        return snapshot[a].score - snapshot[b].score;
+      });
+      this.highscores.forEach((id, idx) => {
+        this.highscores[idx] = snapshot[id];
+      });
+    } else {
+      this.highscores = [];
+    }
+  }
+
   keyPress(event, pressed) {
     if (pressed) {
       this.keyDown = true;
@@ -311,7 +399,11 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        if (this.newHighScore && this.keyDown) {
+        if (this.splashScreen) {
+          this.now = Date.now();
+          this.splashScreen = false;
+          this.main();
+        } else if(this.newHighScore && this.keyDown) {
           this.highScoreName += " ";
         } else if (!this.newHighScore && this.gameOver) {
           this.newGame();
