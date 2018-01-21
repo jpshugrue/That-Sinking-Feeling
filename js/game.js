@@ -48,15 +48,16 @@ class Game {
     this.highscores.forEach((id, idx) => {
       this.highscores[idx] = snapshot[id];
     });
-    console.log(this.highscores);
   }
 
   newGame() {
+    this.keyDown = false;
     this.score = 0;
     this.timeDiff = 0;
     this.gameOver = false;
     this.highScoreStored = false;
     this.newHighScore = false;
+    this.highScoreName = "";
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
@@ -81,11 +82,12 @@ class Game {
       this.timeDiff = this.timeDiff - this.FRAME;
       if (!this.gameOver) {
         this.update(this.FRAME, this.player, this.map);
-      } else if (!this.highScoreStored){
-        firebase.auth().signInAnonymously();
-        this.checkHighScore();
-        this.highScoreStored = true;
-      }
+        if (this.gameOver && !this.highScoreStored) {
+          firebase.auth().signInAnonymously();
+          this.checkHighScore();
+          this.highScoreStored = true;
+        }
+      } 
       this.water.update(this.FRAME);
     }
     this.render();
@@ -169,7 +171,6 @@ class Game {
     }
     if (player.xVel < 0) {
       if(map.tile(nextRow, nextCol).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol).inCollision(nextPlayer)) {
-        // debugger
         player.xVel = 0;
         player.x = map.tile(nextRow, nextCol).x + this.TILE_SIZE;
         nextCol += 1;
@@ -224,78 +225,59 @@ class Game {
     this.context.strokeStyle = "black";
     this.context.lineWidth = 6;
     this.context.textAlign = "center";
-    this.context.strokeText("Game Over",this.BOARD_DIM/2,200);
-    this.context.fillText("Game Over",this.BOARD_DIM/2,200);
+    this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
+    this.context.fillText("Game Over",this.BOARD_DIM/2,100);
     this.context.font = "24px press_start_2pregular";
-    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
-    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,240);
+    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,140);
+    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,140);
     this.context.font = "18px press_start_2pregular";
-    // if (this.newHighScore) {
-    //   this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,300);
-    //   this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,300);
-    // } else {
-      this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,300);
-      this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,300);
-      this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,330);
-      this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,330);
-      // this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,350);
-      // this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,330);
-      // Object.values(this.highscores)
-    // }
+    if (this.newHighScore) {
+      this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+      this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+      this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
+      this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
+      this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
+      this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
+      this.context.strokeText(`${this.highScoreName}`,this.BOARD_DIM/2,290);
+      this.context.fillText(`${this.highScoreName}`,this.BOARD_DIM/2,290);
+    } else {
+      this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
+      this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
+      this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+      this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+      this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
+      this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
+      this.context.font = "14px press_start_2pregular";
+      this.highscores.slice().reverse().forEach((highscore, idx) => {
+        this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+        this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+      });
+    }
   }
 
   checkHighScore() {
-    if (Object.keys(this.highscores).length < 10) {
+    if (this.highscores.length < 10 || this.highscores[0].score < this.score) {
       this.newHighScore = true;
-    }
-    let minScore;
-    let minId;
-    let currentScore;
-    Object.keys(this.highscores).forEach((timeStamp) => {
-      currentScore = this.highscores[timeStamp].score;
-      if (!minScore || currentScore < minScore) {
-        minScore = currentScore;
-        minId = timeStamp;
-      }
-    });
-    if (this.score > minScore) {
-      this.newHighScore = true;
+
     }
   }
-  //   console.log(this.highscores);
-  //   const dateTime = Date.now();
-  //   if (Object.keys(this.highscores).length < 10) {
-  //     this.database.ref('highscores/' + dateTime).set({
-  //       score: this.score,
-  //       date: dateTime,
-  //       name: "testName"
-  //     });
-  //   } else {
-  //     let minScore;
-  //     let minId;
-  //     let currentScore;
-  //     Object.keys(this.highscores).forEach((timeStamp) => {
-  //       currentScore = this.highscores[timeStamp].score;
-  //       if (!minScore || currentScore < minScore) {
-  //         minScore = currentScore;
-  //         minId = timeStamp;
-  //       }
-  //     });
-  //     this.database.ref('highscores/' + minId).remove();
-  //     this.database.ref('highscores/' + dateTime).set({
-  //       score: this.score,
-  //       date: dateTime,
-  //       name: "replaceName"
-  //     });
-  //     console.log("Replaced an entry");
-  //   }
-  // }
 
-  updateHighScore() {
-
+  enterHighScore(name) {
+    const dateTime = Date.now();
+    this.database.ref('highscores/' + this.highscores[0].date).remove();
+    this.database.ref('highscores/' + dateTime).set({
+      score: this.score,
+      date: dateTime,
+      name: name
+    });
   }
 
   keyPress(event, pressed) {
+    if (pressed) {
+      this.keyDown = true;
+    } else {
+      this.keyDown = false;
+    }
     switch(event.key) {
       case "ArrowLeft":
         this.player.left = pressed;
@@ -309,18 +291,29 @@ class Game {
       case "ArrowDown":
         event.preventDefault();
         break;
+      case "Enter":
+        if (this.newHighScore) {
+          this.newHighScore = false;
+          this.enterHighScore(this.highScoreName);
+        }
+        break;
+      case "Backspace":
+        if (this.newHighScore && this.keyDown) {
+          this.highScoreName = this.highScoreName.slice(0, -1);
+        }
+        break;
       case " ":
         event.preventDefault();
-        if (this.gameOver) {
-          this.newGame();
-        } else if (this.newHighScore) {
+        if (this.newHighScore && this.keyDown) {
           this.highScoreName += " ";
-        } else {
+        } else if (!this.newHighScore && this.gameOver) {
+          this.newGame();
+        } else if (!this.newHighScore){
           this.player.jump = pressed;
         }
         break;
       default:
-        if (this.newHighScore && event.key.length === 1) {
+        if (this.newHighScore && this.keyDown && event.key.length === 1) {
           this.highScoreName += event.key;
         }
     }
