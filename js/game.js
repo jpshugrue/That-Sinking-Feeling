@@ -109,18 +109,18 @@ class Game {
     this.context.strokeStyle = "white";
     this.context.lineWidth = 3;
     this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 80);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 80);
+    this.context.moveTo(this.BOARD_DIM/3, 100);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 100);
     this.context.stroke();
 
     this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 255);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 255);
+    this.context.moveTo(this.BOARD_DIM/3, 275);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 275);
     this.context.stroke();
 
     this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 440);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 440);
+    this.context.moveTo(this.BOARD_DIM/3, 460);
+    this.context.lineTo((this.BOARD_DIM/3) * 2, 460);
     this.context.stroke();
 
     this.context.font = "18px press_start_2pregular";
@@ -128,48 +128,48 @@ class Game {
     this.context.lineWidth = 6;
     this.context.textAlign = "center";
     this.context.fillStyle = "white";
-    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,30);
-    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,30);
-    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,60);
-    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,60);
+    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,50);
+    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,50);
+    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,80);
+    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,80);
 
-    this.context.strokeText(`How To Play`,this.BOARD_DIM/2,120);
-    this.context.fillText(`How To Play`,this.BOARD_DIM/2,120);
+    this.context.strokeText(`How To Play`,this.BOARD_DIM/2,140);
+    this.context.fillText(`How To Play`,this.BOARD_DIM/2,140);
 
-    this.context.strokeText(`The Story So Far`,this.BOARD_DIM/2,295);
-    this.context.fillText(`The Story So Far`,this.BOARD_DIM/2,295);
+    this.context.strokeText(`The Story So Far`,this.BOARD_DIM/2,315);
+    this.context.fillText(`The Story So Far`,this.BOARD_DIM/2,315);
 
-    this.context.strokeText(`Our Intrepid`,this.BOARD_DIM/3*2,500);
-    this.context.fillText(`Our Intrepid`,this.BOARD_DIM/3*2,500);
-    this.context.strokeText(`Protagonist`,this.BOARD_DIM/3*2,530);
-    this.context.fillText(`Protagonist`,this.BOARD_DIM/3*2,530);
+    this.context.strokeText(`Our Intrepid`,this.BOARD_DIM/3*2,520);
+    this.context.fillText(`Our Intrepid`,this.BOARD_DIM/3*2,520);
+    this.context.strokeText(`Protagonist`,this.BOARD_DIM/3*2,550);
+    this.context.fillText(`Protagonist`,this.BOARD_DIM/3*2,550);
 
     this.context.font = "12px press_start_2pregular";
-    this.context.strokeText(`Use The Arrow Keys`,this.BOARD_DIM/4,150);
-    this.context.fillText(`Use The Arrow Keys`,this.BOARD_DIM/4,150);
-    this.context.strokeText(`To Move`,this.BOARD_DIM/4,175);
-    this.context.fillText(`To Move`,this.BOARD_DIM/4,175);
-    this.context.drawImage(this.leftArrowImg, this.BOARD_DIM/4 - 69, 190);
-    this.context.drawImage(this.rightArrowImg, this.BOARD_DIM/4 + 23, 190);
+    this.context.strokeText(`Use The Arrow Keys`,this.BOARD_DIM/4,170);
+    this.context.fillText(`Use The Arrow Keys`,this.BOARD_DIM/4,170);
+    this.context.strokeText(`To Move`,this.BOARD_DIM/4,195);
+    this.context.fillText(`To Move`,this.BOARD_DIM/4,195);
+    this.context.drawImage(this.leftArrowImg, this.BOARD_DIM/4 - 69, 210);
+    this.context.drawImage(this.rightArrowImg, this.BOARD_DIM/4 + 23, 210);
 
-    this.context.strokeText(`Use The Space Bar`,this.BOARD_DIM/4*3,150);
-    this.context.fillText(`Use The Space Bar`,this.BOARD_DIM/4*3,150);
-    this.context.strokeText(`To Jump`,this.BOARD_DIM/4*3,175);
-    this.context.fillText(`To Jump`,this.BOARD_DIM/4*3,175);
-    this.context.drawImage(this.spacebarImg, this.BOARD_DIM/4*3-137, 190);
+    this.context.strokeText(`Use The Space Bar`,this.BOARD_DIM/4*3,170);
+    this.context.fillText(`Use The Space Bar`,this.BOARD_DIM/4*3,170);
+    this.context.strokeText(`To Jump`,this.BOARD_DIM/4*3,195);
+    this.context.fillText(`To Jump`,this.BOARD_DIM/4*3,195);
+    this.context.drawImage(this.spacebarImg, this.BOARD_DIM/4*3-137, 210);
 
-    this.context.strokeText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,320);
-    this.context.fillText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,320);
-    this.context.strokeText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,345);
-    this.context.fillText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,345);
-    this.context.strokeText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,370);
-    this.context.fillText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,370);
-    this.context.strokeText(`Outrun the rising water to make it`,this.BOARD_DIM/2,395);
-    this.context.fillText(`Outrun the rising water to make it`,this.BOARD_DIM/2,395);
-    this.context.strokeText(`to the surface`,this.BOARD_DIM/2,420);
-    this.context.fillText(`to the surface`,this.BOARD_DIM/2,420);
+    this.context.strokeText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,340);
+    this.context.fillText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,340);
+    this.context.strokeText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,365);
+    this.context.fillText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,365);
+    this.context.strokeText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,390);
+    this.context.fillText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,390);
+    this.context.strokeText(`Outrun the rising water to make it`,this.BOARD_DIM/2,415);
+    this.context.fillText(`Outrun the rising water to make it`,this.BOARD_DIM/2,415);
+    this.context.strokeText(`to the surface`,this.BOARD_DIM/2,440);
+    this.context.fillText(`to the surface`,this.BOARD_DIM/2,440);
 
-    this.context.rect(this.BOARD_DIM/4, 480, 50, 50);
+    this.context.rect(this.BOARD_DIM/4, 500, 50, 50);
     this.context.fill();
   }
 
