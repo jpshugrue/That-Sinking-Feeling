@@ -14248,12 +14248,16 @@ class Game {
   }
 
   sortHighScores(snapshot) {
-    this.highscores = Object.keys(snapshot).sort((a,b) => {
-      return snapshot[a].score - snapshot[b].score;
-    });
-    this.highscores.forEach((id, idx) => {
-      this.highscores[idx] = snapshot[id];
-    });
+    if (snapshot) {
+      this.highscores = Object.keys(snapshot).sort((a,b) => {
+        return snapshot[a].score - snapshot[b].score;
+      });
+      this.highscores.forEach((id, idx) => {
+        this.highscores[idx] = snapshot[id];
+      });
+    } else {
+      this.highscores = [];
+    }
   }
 
   newGame() {
@@ -14293,7 +14297,7 @@ class Game {
           this.checkHighScore();
           this.highScoreStored = true;
         }
-      } 
+      }
       this.water.update(this.FRAME);
     }
     this.render();
@@ -14470,7 +14474,10 @@ class Game {
 
   enterHighScore(name) {
     const dateTime = Date.now();
-    this.database.ref('highscores/' + this.highscores[0].date).remove();
+          // debugger
+    if (this.highscores.length >= 10 && this.highscores[0]) {
+      this.database.ref('highscores/' + this.highscores[0].date).remove();
+    }
     this.database.ref('highscores/' + dateTime).set({
       score: this.score,
       date: dateTime,
