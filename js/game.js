@@ -260,8 +260,6 @@ class Game {
         player.xVel = 0;
         player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
         nextCol -= 1;
-        // rightwall = true;
-        // debugger
       }
     }
     if (player.yVel < 0) {

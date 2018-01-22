@@ -79,7 +79,6 @@ class MapSet {
        0: [12,13,14,15,16,17,18,19,20,21,22]
     };
     const translatedSet = this.translate(set);
-    // debugger
     return translatedSet;
   }
 
