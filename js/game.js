@@ -242,6 +242,7 @@ class Game {
     const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
+    // let rightwall = false;
 
     if (nextRow < 0) {
       nextRow = 0;
@@ -258,6 +259,9 @@ class Game {
       if(map.tile(nextRow, nextCol+1).inCollision(nextPlayer) || map.tile(nextRow+1, nextCol+1).inCollision(nextPlayer)) {
         player.xVel = 0;
         player.x = map.tile(nextRow, nextCol+1).x - this.TILE_SIZE;
+        nextCol -= 1;
+        // rightwall = true;
+        // debugger
       }
     }
     if (player.yVel < 0) {
@@ -296,7 +300,7 @@ class Game {
 
   isStanding(player, map) {
     const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
-    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || this.map.tile(tilePos[0]+1, tilePos[1]+1).collides);
+    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
   }
 
   endGame() {
