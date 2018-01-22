@@ -232,11 +232,11 @@ class Game {
         if (this.splashScreen) {
           this.now = Date.now();
           this.splashScreen = false;
-        } else if(this.score.checkIfHighScore() && this.keyDown) {
+        } else if(this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
-        } else if (!this.score.checkIfHighScore() && this.gameOver) {
+        } else if (this.gameOver && !this.score.checkIfHighScore()) {
           this.newGame();
-        } else if (!this.score.checkIfHighScore()){
+        } else if (!this.gameOver){
           this.player.jump = pressed;
         }
         break;
