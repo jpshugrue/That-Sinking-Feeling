@@ -7035,10 +7035,10 @@ class Tile {
   }
 
   inCollision(player) {
-    return (this.collides && !(this.x >= player.x + player.size || this.x + this.size <= player.x
-      || this.y >= player.y + player.size || this.y + this.size <= player.y));
+    return (this.collides && !(this.x >= player.x + player.size
+      || this.x + this.size <= player.x || this.y >= player.y + player.size
+      || this.y + this.size <= player.y));
   }
-
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Tile);
@@ -14200,11 +14200,7 @@ $(() => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__map__ = __webpack_require__(84);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__water__ = __webpack_require__(86);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__background__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_firebase__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_firebase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_firebase__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_firebase_database__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_firebase_database___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_firebase_database__);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__score__ = __webpack_require__(169);
 
 
 
@@ -14222,6 +14218,7 @@ class Game {
     this.FRICTION = 16;
     this.GRAVITY = 16;
     this.FRAME = 1/60;
+
     this.splashScreen = true;
     this.leftArrowImg = new Image(46, 46);
     this.leftArrowImg.src = 'images/sprites/left-arrow.png';
@@ -14236,44 +14233,28 @@ class Game {
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
-    const config = {
-      apiKey: "AIzaSyCMiP-QRvxlqRzhay6gmuQTJNgGWinwOuM",
-      authDomain: "that-sinking-feeling.firebaseapp.com",
-      databaseURL: "https://that-sinking-feeling.firebaseio.com",
-      projectId: "that-sinking-feeling",
-      storageBucket: "that-sinking-feeling.appspot.com",
-      messagingSenderId: "676176501519"
-    };
-    __WEBPACK_IMPORTED_MODULE_4_firebase__["initializeApp"](config);
-    this.database = __WEBPACK_IMPORTED_MODULE_4_firebase__["database"]();
-    const dbref = this.database.ref().child('highscores');
-    dbref.on('value', (snapshot) => {
-      this.sortHighScores(snapshot.val());
-    });
-
     this.main = this.main.bind(this);
     this.displaySplashScreen = this.displaySplashScreen.bind(this);
   }
 
   newGame() {
     this.keyDown = false;
-    this.score = 0;
     this.timeDiff = 0;
     this.gameOver = false;
     this.highScoreStored = false;
-    this.newHighScore = false;
-    this.highScoreName = "";
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
       this.background.reset();
       this.water.reset();
+      this.score.reset();
     } else {
       this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
       this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
       this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,500], this.TILE_SIZE);
       this.background = new __WEBPACK_IMPORTED_MODULE_3__background__["a" /* default */](this.context, this.BOARD_DIM);
       this.water = new __WEBPACK_IMPORTED_MODULE_2__water__["a" /* default */](this.TILE_SIZE, this.BOARD_DIM, this.context);
+      this.score = new __WEBPACK_IMPORTED_MODULE_4__score__["a" /* default */]();
     }
     this.now = Date.now();
     if (this.splashScreen) {
@@ -14291,11 +14272,6 @@ class Game {
       this.timeDiff = this.timeDiff - this.FRAME;
       if (!this.gameOver) {
         this.update(this.FRAME, this.player, this.map);
-        if (this.gameOver && !this.highScoreStored) {
-          __WEBPACK_IMPORTED_MODULE_4_firebase__["auth"]().signInAnonymously();
-          this.checkHighScore();
-          this.highScoreStored = true;
-        }
       }
       this.water.update(this.FRAME);
     }
@@ -14304,7 +14280,7 @@ class Game {
   }
 
   update(timeDiff, player, map) {
-    this.score += timeDiff * 10;
+    this.score.currentScore += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
       player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
@@ -14348,7 +14324,7 @@ class Game {
       this.context.textAlign = "left";
       this.context.font = '16px fippsregular';
       this.context.fillStyle = "#1e2a3d";
-      this.context.fillText(`Score: ${Math.floor(this.score)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
+      this.context.fillText(`Score: ${Math.floor(this.score.currentScore)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
     }
   }
 
@@ -14372,7 +14348,6 @@ class Game {
     const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
-    // let rightwall = false;
 
     if (nextRow < 0) {
       nextRow = 0;
@@ -14439,18 +14414,18 @@ class Game {
     this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
     this.context.fillText("Game Over",this.BOARD_DIM/2,100);
     this.context.font = "24px press_start_2pregular";
-    this.context.strokeText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,140);
-    this.context.fillText(`Your score was: ${Math.floor(this.score)}`,this.BOARD_DIM/2,140);
+    this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
+    this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
     this.context.font = "18px press_start_2pregular";
-    if (this.newHighScore) {
+    if (this.score.checkIfHighScore()) {
       this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
       this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
       this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
       this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
       this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
       this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
-      this.context.strokeText(`${this.highScoreName}`,this.BOARD_DIM/2,290);
-      this.context.fillText(`${this.highScoreName}`,this.BOARD_DIM/2,290);
+      this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
+      this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
     } else {
       this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
       this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
@@ -14459,43 +14434,10 @@ class Game {
       this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
       this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
       this.context.font = "14px press_start_2pregular";
-      this.highscores.slice().reverse().forEach((highscore, idx) => {
+      this.score.highscores.slice().reverse().forEach((highscore, idx) => {
         this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
         this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
       });
-    }
-  }
-
-  checkHighScore() {
-    if (this.highscores.length < 10 || this.highscores[0].score < this.score) {
-      this.newHighScore = true;
-
-    }
-  }
-
-  enterHighScore(name) {
-    const dateTime = Date.now();
-          // debugger
-    if (this.highscores.length >= 10 && this.highscores[0]) {
-      this.database.ref('highscores/' + this.highscores[0].date).remove();
-    }
-    this.database.ref('highscores/' + dateTime).set({
-      score: this.score,
-      date: dateTime,
-      name: name
-    });
-  }
-
-  sortHighScores(snapshot) {
-    if (snapshot) {
-      this.highscores = Object.keys(snapshot).sort((a,b) => {
-        return snapshot[a].score - snapshot[b].score;
-      });
-      this.highscores.forEach((id, idx) => {
-        this.highscores[idx] = snapshot[id];
-      });
-    } else {
-      this.highscores = [];
     }
   }
 
@@ -14595,14 +14537,13 @@ class Game {
         event.preventDefault();
         break;
       case "Enter":
-        if (this.newHighScore) {
-          this.newHighScore = false;
-          this.enterHighScore(this.highScoreName);
+        if (this.score.checkIfHighScore()) {
+          this.score.submitHighScore();
         }
         break;
       case "Backspace":
-        if (this.newHighScore && this.keyDown) {
-          this.highScoreName = this.highScoreName.slice(0, -1);
+        if (this.score.checkIfHighScore() && this.keyDown) {
+          this.score.name = this.score.name.slice(0, -1);
         }
         break;
       case " ":
@@ -14611,21 +14552,20 @@ class Game {
           this.now = Date.now();
           this.splashScreen = false;
           this.main();
-        } else if(this.newHighScore && this.keyDown) {
-          this.highScoreName += " ";
-        } else if (!this.newHighScore && this.gameOver) {
+        } else if(this.score.checkIfHighScore() && this.keyDown) {
+          this.score.name += " ";
+        } else if (!this.score.checkIfHighScore() && this.gameOver) {
           this.newGame();
-        } else if (!this.newHighScore){
+        } else if (!this.score.checkIfHighScore()){
           this.player.jump = pressed;
         }
         break;
       default:
-        if (this.newHighScore && this.keyDown && event.key.length === 1) {
-          this.highScoreName += event.key;
+        if (this.score.checkIfHighScore() && this.keyDown && event.key.length === 1) {
+          this.score.name += event.key;
         }
     }
   }
-
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Game);
@@ -27254,6 +27194,83 @@ function stop(id) {
 }
 
 //# sourceMappingURL=backoff.js.map
+
+
+/***/ }),
+/* 169 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_firebase__ = __webpack_require__(88);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_firebase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_firebase__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase_database__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase_database___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_firebase_database__);
+
+
+
+class Score {
+
+  constructor() {
+    this.currentScore = 0;
+    this.name = "";
+    this.submittedScore = false;
+
+    const config = {
+      apiKey: "AIzaSyCMiP-QRvxlqRzhay6gmuQTJNgGWinwOuM",
+      authDomain: "that-sinking-feeling.firebaseapp.com",
+      databaseURL: "https://that-sinking-feeling.firebaseio.com",
+      projectId: "that-sinking-feeling",
+      storageBucket: "that-sinking-feeling.appspot.com",
+      messagingSenderId: "676176501519"
+    };
+    __WEBPACK_IMPORTED_MODULE_0_firebase__["initializeApp"](config);
+    __WEBPACK_IMPORTED_MODULE_0_firebase__["auth"]().signInAnonymously();
+    this.database = __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]();
+    const dbref = this.database.ref().child('highscores');
+    dbref.on('value', (snapshot) => {
+      this.sortHighScores(snapshot.val());
+    });
+  }
+
+  sortHighScores(snapshot) {
+    if (snapshot) {
+      this.highscores = Object.keys(snapshot).sort((a,b) => {
+        return snapshot[a].score - snapshot[b].score;
+      });
+      this.highscores.forEach((id, idx) => {
+        this.highscores[idx] = snapshot[id];
+      });
+    } else {
+      this.highscores = [];
+    }
+  }
+
+  checkIfHighScore() {
+    return (!this.submittedScore && (this.highscores.length < 10 ||
+      this.highscores[0].score < this.currentScore));
+  }
+
+  submitHighScore() {
+    const dateTime = Date.now();
+    if (this.highscores.length >= 10) {
+      this.database.ref('highscores/' + this.highscores[0].date).remove();
+    }
+    this.database.ref('highscores/' + dateTime).set({
+      score: this.currentScore,
+      date: dateTime,
+      name: this.name
+    });
+    this.submittedScore = true;
+  }
+
+  reset() {
+    this.currentScore = 0;
+    this.submittedScore = false;
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Score);
 
 
 /***/ })

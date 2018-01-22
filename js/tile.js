@@ -15,10 +15,10 @@ class Tile {
   }
 
   inCollision(player) {
-    return (this.collides && !(this.x >= player.x + player.size || this.x + this.size <= player.x
-      || this.y >= player.y + player.size || this.y + this.size <= player.y));
+    return (this.collides && !(this.x >= player.x + player.size
+      || this.x + this.size <= player.x || this.y >= player.y + player.size
+      || this.y + this.size <= player.y));
   }
-
 }
 
 export default Tile;
