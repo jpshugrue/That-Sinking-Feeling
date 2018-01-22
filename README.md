@@ -1,66 +1,40 @@
-# That Sinking Feeling
-That Sinking Feeling is a vertical platform jumping game where the player has to keep moving upward to avoid a constantly rising water level
+![alt text](https://raw.githubusercontent.com/jpshugrue/That-Sinking-Feeling/master/images/readme/title.png "That Sinking Feeling Logo")
 
-## MVP
+[That Sinking Feeling Live](http://jpshugrue.com/That-Sinking-Feeling/)
 
-- Hosting of the program using GitHub Pages
+Your ship is sinking and you've got to outrun the rising water to make it to the surface! That Sinking Feeling is a platforming game built with JavaScript, the HTML5 Canvas and utilizing Google Firebase.
 
-- Display of game world using Canvas and the EaselJS library
+![alt text](https://raw.githubusercontent.com/jpshugrue/That-Sinking-Feeling/master/images/readme/gameplay.png "That Sinking Feeling Gameplay")
 
-- Keyboard control of the player which has a concept of gravity and the ability to jump
+## How to Play
 
-- Automatic generation of new sets of platforms that are within jumping distance of those below as the player moves up
+- To start the game, press the spacebar
+- Use the left and right keyboard arrow keys to control the protagonist and use the spacebar to jump
+- Once at the game over screen, if you've achieved a high score enter your name with the keyboard and press enter to submit
 
-- A game screen which will move up as the player does but not move down and which will trigger a game over screen when the player drops below the bottom of the screen
+## Implementation
 
-- A steadily rising water level as represented by a level of opacity that rises independently of the game screen and will trigger a game over if the player enters it
+### HTML5 Canvas
+TSF is implemented using the HTML5 Canvas and vanilla JavaScript, without the use of other external Canvas libraries. The canvas is continually rendered using the requestAnimationFrame method, but in order to ensure a consistent frame rate and experience between different computers and browsers the rate of calls to render is limited to once every 1/60 second. Without this the calls to render could vary in frequency as requestAnimationFrame is pegged to the display refresh rate of the web browser. Early on, without this limiter, the game experience would vary widely even on the same computer and browser.
 
-- A score counter that increases as time passes and which is compared against a leaderboard on a game over
+### Tile Set
+Knowing early on that I wished to use image sprites for the platforms I implemented the game world as a grid of tiles of a set size. Each tile can store the image that it will display and maintains a variable to determine if it can be passed through or will cause a collision with the player. The tile structure has the added benefit of simplifying collision detection between the player and platforms. Given that the player can only possibly overlap a maximum of 4 tiles at a time we need only check a small number of tiles based on the player's position and velocity.
 
-## Technologies, Libraries, APIs
+### High Score Table
 
-TSF will be implemented in JavaScript using Canvas and possibly the EaselJS library.
+![alt text](https://raw.githubusercontent.com/jpshugrue/That-Sinking-Feeling/master/images/readme/highscore.png "That Sinking Feeling Gameplay")
 
-I anticipate implementing the following will present challenges:
+A high score table is implemented using Google Firebase, which allows scores to persist not only between game sessions, but between different users as scores are stored in a central location between all instances of the game. The scores also live update during gameplay if another user has achieved a new high score thanks to the value event listener in Firebase's database API.
 
-- Gravity and friction - The player will need to drop after a jump and slow to a stop horizontally when not pressing the movement keys. This will need to be tweaked to be not unpleasantly floaty or slippery feeling
+### What's next for That Sinking Feeling?
 
-- Collision - The player will need to be stopped by platforms and walls but not in a way that overzealously halts their movement.
+The features I intend to implement in the future include:
 
-- Platforms - Platforms will need to be continuously generated as the player moves upwards in such a way that the player is never left without the ability to keep going. I will implement this by determining a minimum viable jumping distance and storing a premade set of platforms that can be inserted into the game world.
+### Varying Levels of Difficulty
+Add the ability to select the desired difficulty level on the main splash page, which will affect the speed of the water level, the speed of the player character and how high they can jump and the spacing of the platforms
 
-- Water Level - The water level will rise independently of the bottom of the screen and will need to be tracked separately. I will need to handle a concept of negative space as the water level may be rising below the bottom of the screen.
+### Obstacles and Environmental Effects
+Add environmental effects such as varying light levels, a tilted and wavering viewpoint and obstacles such as steam vents and explosions that can slow down or knock back the player
 
-## Wireframes
-
-![alt text](https://github.com/jpshugrue/That-Sinking-Feeling/blob/master/images/BasicTemplate.png "Basic Wireframe")
-
-## Backend
-
-If time allows I will include a high score table that utilizes a database to allow scores to persist beyond the current session. This table would include the following:
-
-- Score - Integer
-- Name - Text
-- Timestamp
-
-## Implementation Timeline
-
-### Phase 1
-
-- Setup website hosting with GitHub pages
-- Implement basic game world with player movement (but without vertical world movement), gravity and platforms with intelligent collision
-- Calculate minimum jumping distances between platforms
-- Build a set of pre made platforms to be populated in the game world
-- Implement a rising water level that triggers a game over when in contact with the player
-
-### Phase 2
-- Implement a vertically moving game world based on player movement
-- Ensure rising water level persists even if game world moves vertically above it
-- Implement intelligent automatic populating of platforms
-- Implement game over based on player dropping below the bottom of the screen
-
-### Phase 3
-- Implement player score and database backend
-- Implement starting splash screen and game over screen
-- Include nicer looking sprites for player, platforms and a scrolling image for the background
-- Implement varying levels of difficulty that will adjust the speed of water level rise and spacing and frequency of platforms
+### Randomized Level Generation
+Implement random generation of beatable sets of platforms rather than pulling from a know list of pre-checked map sets
