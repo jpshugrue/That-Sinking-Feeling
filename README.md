@@ -26,7 +26,7 @@ Knowing early on that I wished to use image sprites for the platforms I implemen
 
 A high score table is implemented using Google Firebase, which allows scores to persist not only between game sessions, but between different users as scores are stored in a central location between all instances of the game. The scores also live update during gameplay if another user has achieved a new high score thanks to the value event listener in Firebase's database API.
 
-### What's next for That Sinking Feeling?
+## What's next for That Sinking Feeling?
 
 The features I intend to implement in the future include:
 
