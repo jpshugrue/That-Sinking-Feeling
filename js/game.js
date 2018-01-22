@@ -3,6 +3,7 @@ import Map from './map';
 import Water from './water';
 import Background from './background';
 import Score from './score';
+import { endGame } from './display';
 
 class Game {
 
@@ -116,7 +117,7 @@ class Game {
     this.player.render(this.context);
     this.water.render();
     if (this.gameOver) {
-      this.endGame();
+      endGame(this.context, this.score, this.BOARD_DIM);
     } else {
       this.context.textAlign = "left";
       this.context.font = '16px fippsregular';
@@ -203,40 +204,40 @@ class Game {
     return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
   }
 
-  endGame() {
-    this.context.font = "42px press_start_2pregular";
-    this.context.strokeStyle = "black";
-    this.context.lineWidth = 6;
-    this.context.textAlign = "center";
-    this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
-    this.context.fillText("Game Over",this.BOARD_DIM/2,100);
-    this.context.font = "24px press_start_2pregular";
-    this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-    this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-    this.context.font = "18px press_start_2pregular";
-    if (this.score.checkIfHighScore()) {
-      this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-      this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-      this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
-      this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
-      this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
-      this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
-      this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
-      this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
-    } else {
-      this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
-      this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
-      this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-      this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-      this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
-      this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
-      this.context.font = "14px press_start_2pregular";
-      this.score.highscores.slice().reverse().forEach((highscore, idx) => {
-        this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-        this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-      });
-    }
-  }
+  // endGame() {
+  //   this.context.font = "42px press_start_2pregular";
+  //   this.context.strokeStyle = "black";
+  //   this.context.lineWidth = 6;
+  //   this.context.textAlign = "center";
+  //   this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
+  //   this.context.fillText("Game Over",this.BOARD_DIM/2,100);
+  //   this.context.font = "24px press_start_2pregular";
+  //   this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
+  //   this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
+  //   this.context.font = "18px press_start_2pregular";
+  //   if (this.score.checkIfHighScore()) {
+  //     this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+  //     this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+  //     this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
+  //     this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
+  //     this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
+  //     this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
+  //     this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
+  //     this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
+  //   } else {
+  //     this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
+  //     this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
+  //     this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+  //     this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+  //     this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
+  //     this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
+  //     this.context.font = "14px press_start_2pregular";
+  //     this.score.highscores.slice().reverse().forEach((highscore, idx) => {
+  //       this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+  //       this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+  //     });
+  //   }
+  // }
 
   displaySplashScreen() {
     this.render();

@@ -14201,6 +14201,8 @@ $(() => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__water__ = __webpack_require__(86);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__background__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__score__ = __webpack_require__(169);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__display__ = __webpack_require__(170);
+
 
 
 
@@ -14319,7 +14321,7 @@ class Game {
     this.player.render(this.context);
     this.water.render();
     if (this.gameOver) {
-      this.endGame();
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["a" /* endGame */])(this.context, this.score, this.BOARD_DIM);
     } else {
       this.context.textAlign = "left";
       this.context.font = '16px fippsregular';
@@ -14406,40 +14408,40 @@ class Game {
     return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
   }
 
-  endGame() {
-    this.context.font = "42px press_start_2pregular";
-    this.context.strokeStyle = "black";
-    this.context.lineWidth = 6;
-    this.context.textAlign = "center";
-    this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
-    this.context.fillText("Game Over",this.BOARD_DIM/2,100);
-    this.context.font = "24px press_start_2pregular";
-    this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-    this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-    this.context.font = "18px press_start_2pregular";
-    if (this.score.checkIfHighScore()) {
-      this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-      this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-      this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
-      this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
-      this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
-      this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
-      this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
-      this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
-    } else {
-      this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
-      this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
-      this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-      this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-      this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
-      this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
-      this.context.font = "14px press_start_2pregular";
-      this.score.highscores.slice().reverse().forEach((highscore, idx) => {
-        this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-        this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-      });
-    }
-  }
+  // endGame() {
+  //   this.context.font = "42px press_start_2pregular";
+  //   this.context.strokeStyle = "black";
+  //   this.context.lineWidth = 6;
+  //   this.context.textAlign = "center";
+  //   this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
+  //   this.context.fillText("Game Over",this.BOARD_DIM/2,100);
+  //   this.context.font = "24px press_start_2pregular";
+  //   this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
+  //   this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
+  //   this.context.font = "18px press_start_2pregular";
+  //   if (this.score.checkIfHighScore()) {
+  //     this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+  //     this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
+  //     this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
+  //     this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
+  //     this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
+  //     this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
+  //     this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
+  //     this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
+  //   } else {
+  //     this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
+  //     this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
+  //     this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+  //     this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
+  //     this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
+  //     this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
+  //     this.context.font = "14px press_start_2pregular";
+  //     this.score.highscores.slice().reverse().forEach((highscore, idx) => {
+  //       this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+  //       this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
+  //     });
+  //   }
+  // }
 
   displaySplashScreen() {
     this.render();
@@ -27271,6 +27273,56 @@ class Score {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Score);
+
+
+/***/ }),
+/* 170 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const splashScreen = () => {
+
+};
+/* unused harmony export splashScreen */
+
+
+const endGame = (context, score, boardDim) => {
+  // debugger
+  context.font = "42px press_start_2pregular";
+  context.strokeStyle = "black";
+  context.lineWidth = 6;
+  context.textAlign = "center";
+  context.strokeText("Game Over",boardDim/2,100);
+  context.fillText("Game Over",boardDim/2,100);
+  context.font = "24px press_start_2pregular";
+  context.strokeText(`Your score was: ${Math.floor(score.currentScore)}`,boardDim/2,140);
+  context.fillText(`Your score was: ${Math.floor(score.currentScore)}`,boardDim/2,140);
+  context.font = "18px press_start_2pregular";
+  if (score.checkIfHighScore()) {
+    context.strokeText(`You Have A New High Score!`,boardDim/2,200);
+    context.fillText(`You Have A New High Score!`,boardDim/2,200);
+    context.strokeText(`Enter Your Name`,boardDim/2,230);
+    context.fillText(`Enter Your Name`,boardDim/2,230);
+    context.strokeText(`Then Press Enter`,boardDim/2,260);
+    context.fillText(`Then Press Enter`,boardDim/2,260);
+    context.strokeText(`${score.name}`,boardDim/2,290);
+    context.fillText(`${score.name}`,boardDim/2,290);
+  } else {
+    context.strokeText(`To Start A New Game`,boardDim/2,180);
+    context.fillText(`To Start A New Game`,boardDim/2,180);
+    context.strokeText(`Press The Space Bar`,boardDim/2,210);
+    context.fillText(`Press The Space Bar`,boardDim/2,210);
+    context.strokeText(`Current High Scores`,boardDim/2,270);
+    context.fillText(`Current High Scores`,boardDim/2,270);
+    context.font = "14px press_start_2pregular";
+    score.highscores.slice().reverse().forEach((highscore, idx) => {
+      context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,boardDim/2,310 + (idx * 30));
+      context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,boardDim/2,310 + (idx * 30));
+    });
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = endGame;
+
 
 
 /***/ })
