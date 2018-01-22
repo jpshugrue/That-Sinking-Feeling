@@ -14222,12 +14222,6 @@ class Game {
     this.FRAME = 1/60;
 
     this.splashScreen = true;
-    this.leftArrowImg = new Image(46, 46);
-    this.leftArrowImg.src = 'images/sprites/left-arrow.png';
-    this.rightArrowImg = new Image(46, 46);
-    this.rightArrowImg.src = 'images/sprites/right-arrow.png';
-    this.spacebarImg = new Image(274, 40);
-    this.spacebarImg.src = 'images/sprites/spacebar.png';
 
     const canvas = document.getElementById('gameCanvas');
     this.context = canvas.getContext('2d');
@@ -14236,7 +14230,6 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.main = this.main.bind(this);
-    this.displaySplashScreen = this.displaySplashScreen.bind(this);
   }
 
   newGame() {
@@ -14259,26 +14252,27 @@ class Game {
       this.score = new __WEBPACK_IMPORTED_MODULE_4__score__["a" /* default */]();
     }
     this.now = Date.now();
-    if (this.splashScreen) {
-      this.displaySplashScreen();
-    } else {
-      this.main();
-    }
+    this.main();
   }
 
   main() {
-    let then = this.now;
-    this.now = Date.now();
-    this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
-    while(this.timeDiff > this.FRAME) {
-      this.timeDiff = this.timeDiff - this.FRAME;
-      if (!this.gameOver) {
-        this.update(this.FRAME, this.player, this.map);
+    if (!this.splashScreen) {
+      let then = this.now;
+      this.now = Date.now();
+      this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
+      while(this.timeDiff > this.FRAME) {
+        this.timeDiff = this.timeDiff - this.FRAME;
+        if (!this.gameOver) {
+          this.update(this.FRAME, this.player, this.map);
+        }
+        this.water.update(this.FRAME);
       }
-      this.water.update(this.FRAME);
     }
     this.render();
     window.requestAnimationFrame(this.main);
+    if (this.splashScreen) {
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["b" /* splashScreen */])(this.context, this.BOARD_DIM);
+    }
   }
 
   update(timeDiff, player, map) {
@@ -14408,117 +14402,6 @@ class Game {
     return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
   }
 
-  // endGame() {
-  //   this.context.font = "42px press_start_2pregular";
-  //   this.context.strokeStyle = "black";
-  //   this.context.lineWidth = 6;
-  //   this.context.textAlign = "center";
-  //   this.context.strokeText("Game Over",this.BOARD_DIM/2,100);
-  //   this.context.fillText("Game Over",this.BOARD_DIM/2,100);
-  //   this.context.font = "24px press_start_2pregular";
-  //   this.context.strokeText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-  //   this.context.fillText(`Your score was: ${Math.floor(this.score.currentScore)}`,this.BOARD_DIM/2,140);
-  //   this.context.font = "18px press_start_2pregular";
-  //   if (this.score.checkIfHighScore()) {
-  //     this.context.strokeText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-  //     this.context.fillText(`You Have A New High Score!`,this.BOARD_DIM/2,200);
-  //     this.context.strokeText(`Enter Your Name`,this.BOARD_DIM/2,230);
-  //     this.context.fillText(`Enter Your Name`,this.BOARD_DIM/2,230);
-  //     this.context.strokeText(`Then Press Enter`,this.BOARD_DIM/2,260);
-  //     this.context.fillText(`Then Press Enter`,this.BOARD_DIM/2,260);
-  //     this.context.strokeText(`${this.score.name}`,this.BOARD_DIM/2,290);
-  //     this.context.fillText(`${this.score.name}`,this.BOARD_DIM/2,290);
-  //   } else {
-  //     this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,180);
-  //     this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,180);
-  //     this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-  //     this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,210);
-  //     this.context.strokeText(`Current High Scores`,this.BOARD_DIM/2,270);
-  //     this.context.fillText(`Current High Scores`,this.BOARD_DIM/2,270);
-  //     this.context.font = "14px press_start_2pregular";
-  //     this.score.highscores.slice().reverse().forEach((highscore, idx) => {
-  //       this.context.strokeText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-  //       this.context.fillText(`${highscore.name} - ${Math.floor(highscore.score)}`,this.BOARD_DIM/2,310 + (idx * 30));
-  //     });
-  //   }
-  // }
-
-  displaySplashScreen() {
-    this.render();
-    window.requestAnimationFrame(this.displaySplashScreen);
-    this.context.save();
-    this.context.globalAlpha = 0.7;
-    this.context.rect(0, 0, this.BOARD_DIM, this.BOARD_DIM);
-    this.context.fill();
-    this.context.restore();
-
-    this.context.strokeStyle = "white";
-    this.context.lineWidth = 3;
-    this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 100);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 100);
-    this.context.stroke();
-
-    this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 275);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 275);
-    this.context.stroke();
-
-    this.context.beginPath();
-    this.context.moveTo(this.BOARD_DIM/3, 460);
-    this.context.lineTo((this.BOARD_DIM/3) * 2, 460);
-    this.context.stroke();
-
-    this.context.font = "18px press_start_2pregular";
-    this.context.strokeStyle = "black";
-    this.context.lineWidth = 6;
-    this.context.textAlign = "center";
-    this.context.fillStyle = "white";
-    this.context.strokeText(`To Start A New Game`,this.BOARD_DIM/2,50);
-    this.context.fillText(`To Start A New Game`,this.BOARD_DIM/2,50);
-    this.context.strokeText(`Press The Space Bar`,this.BOARD_DIM/2,80);
-    this.context.fillText(`Press The Space Bar`,this.BOARD_DIM/2,80);
-
-    this.context.strokeText(`How To Play`,this.BOARD_DIM/2,140);
-    this.context.fillText(`How To Play`,this.BOARD_DIM/2,140);
-
-    this.context.strokeText(`The Story So Far`,this.BOARD_DIM/2,315);
-    this.context.fillText(`The Story So Far`,this.BOARD_DIM/2,315);
-
-    this.context.strokeText(`Our Intrepid`,this.BOARD_DIM/3*2,520);
-    this.context.fillText(`Our Intrepid`,this.BOARD_DIM/3*2,520);
-    this.context.strokeText(`Protagonist`,this.BOARD_DIM/3*2,550);
-    this.context.fillText(`Protagonist`,this.BOARD_DIM/3*2,550);
-
-    this.context.font = "12px press_start_2pregular";
-    this.context.strokeText(`Use The Arrow Keys`,this.BOARD_DIM/4,170);
-    this.context.fillText(`Use The Arrow Keys`,this.BOARD_DIM/4,170);
-    this.context.strokeText(`To Move`,this.BOARD_DIM/4,195);
-    this.context.fillText(`To Move`,this.BOARD_DIM/4,195);
-    this.context.drawImage(this.leftArrowImg, this.BOARD_DIM/4 - 69, 210);
-    this.context.drawImage(this.rightArrowImg, this.BOARD_DIM/4 + 23, 210);
-
-    this.context.strokeText(`Use The Space Bar`,this.BOARD_DIM/4*3,170);
-    this.context.fillText(`Use The Space Bar`,this.BOARD_DIM/4*3,170);
-    this.context.strokeText(`To Jump`,this.BOARD_DIM/4*3,195);
-    this.context.fillText(`To Jump`,this.BOARD_DIM/4*3,195);
-    this.context.drawImage(this.spacebarImg, this.BOARD_DIM/4*3-137, 210);
-
-    this.context.strokeText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,340);
-    this.context.fillText(`Your ship, the S.S. Blocktanic, has struck`,this.BOARD_DIM/2,340);
-    this.context.strokeText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,365);
-    this.context.fillText(`a cubeberg and is sinking fast`,this.BOARD_DIM/2,365);
-    this.context.strokeText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,390);
-    this.context.fillText(`Bad time to be taking a nap in the engine room!`,this.BOARD_DIM/2,390);
-    this.context.strokeText(`Outrun the rising water to make it`,this.BOARD_DIM/2,415);
-    this.context.fillText(`Outrun the rising water to make it`,this.BOARD_DIM/2,415);
-    this.context.strokeText(`to the surface`,this.BOARD_DIM/2,440);
-    this.context.fillText(`to the surface`,this.BOARD_DIM/2,440);
-
-    this.context.rect(this.BOARD_DIM/4, 500, 50, 50);
-    this.context.fill();
-  }
-
   keyPress(event, pressed) {
     if (pressed) {
       this.keyDown = true;
@@ -14553,7 +14436,6 @@ class Game {
         if (this.splashScreen) {
           this.now = Date.now();
           this.splashScreen = false;
-          this.main();
         } else if(this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
         } else if (!this.score.checkIfHighScore() && this.gameOver) {
@@ -27280,10 +27162,72 @@ class Score {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const splashScreen = () => {
+const leftArrowImg = new Image(46, 46);
+leftArrowImg.src = 'images/sprites/left-arrow.png';
+const rightArrowImg = new Image(46, 46);
+rightArrowImg.src = 'images/sprites/right-arrow.png';
+const spacebarImg = new Image(274, 40);
+spacebarImg.src = 'images/sprites/spacebar.png';
 
+const splashScreen = (context, boardDim) => {
+  context.save();
+  context.globalAlpha = 0.7;
+  context.rect(0, 0, boardDim, boardDim);
+  context.fill();
+  context.restore();
+
+  context.strokeStyle = "white";
+  context.lineWidth = 3;
+  context.beginPath();
+  context.moveTo(boardDim/3, 100);
+  context.lineTo((boardDim/3) * 2, 100);
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(boardDim/3, 275);
+  context.lineTo((boardDim/3) * 2, 275);
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(boardDim/3, 460);
+  context.lineTo((boardDim/3) * 2, 460);
+  context.stroke();
+
+  context.font = "18px press_start_2pregular";
+  context.strokeStyle = "black";
+  context.lineWidth = 6;
+  context.textAlign = "center";
+  context.fillStyle = "white";
+  strokeAndFill(context,`To Start A New Game`,boardDim/2,50);
+  strokeAndFill(context,`Press The Space Bar`,boardDim/2,80);
+
+  strokeAndFill(context,`How To Play`,boardDim/2,140);
+
+  strokeAndFill(context,`The Story So Far`,boardDim/2,315);
+
+  strokeAndFill(context,`Our Intrepid`,boardDim/3*2,520);
+  strokeAndFill(context,`Protagonist`,boardDim/3*2,550);
+
+  context.font = "12px press_start_2pregular";
+  strokeAndFill(context,`Use The Arrow Keys`,boardDim/4,170);
+  strokeAndFill(context,`To Move`,boardDim/4,195);
+  context.drawImage(leftArrowImg, boardDim/4 - 69, 210);
+  context.drawImage(rightArrowImg, boardDim/4 + 23, 210);
+
+  strokeAndFill(context,`Use The Space Bar`,boardDim/4*3,170);
+  strokeAndFill(context,`To Jump`,boardDim/4*3,195);
+  context.drawImage(spacebarImg, boardDim/4*3-137, 210);
+
+  strokeAndFill(context,`Your ship, the S.S. Blocktanic, has struck`,boardDim/2,340);
+  strokeAndFill(context,`a cubeberg and is sinking fast`,boardDim/2,365);
+  strokeAndFill(context,`Bad time to be taking a nap in the engine room!`,boardDim/2,390);
+  strokeAndFill(context,`Outrun the rising water to make it`,boardDim/2,415);
+  strokeAndFill(context,`to the surface`,boardDim/2,440);
+
+  context.rect(boardDim/4, 500, 50, 50);
+  context.fill();
 };
-/* unused harmony export splashScreen */
+/* harmony export (immutable) */ __webpack_exports__["b"] = splashScreen;
 
 
 const endGame = (context, score, boardDim) => {
