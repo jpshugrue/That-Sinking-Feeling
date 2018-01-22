@@ -29,10 +29,9 @@ class Game {
   }
 
   newGame() {
-    this.keyDown = false;
     this.timeDiff = 0;
+    this.keyDown = false;
     this.gameOver = false;
-    this.highScoreStored = false;
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
