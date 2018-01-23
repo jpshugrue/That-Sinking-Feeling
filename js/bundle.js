@@ -14270,7 +14270,7 @@ class Game {
     this.render();
     window.requestAnimationFrame(this.main);
     if (this.splashScreen) {
-      Object(__WEBPACK_IMPORTED_MODULE_5__display__["c" /* splashScreen */])(this.context, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["c" /* displaySplashScreen */])(this.context, this.BOARD_DIM);
     }
   }
 
@@ -14296,7 +14296,7 @@ class Game {
         player.x += player.xVel;
       }
       player.y += player.yVel;
-      this.handleFriction(timeDiff);
+      this.handleFriction(timeDiff, player);
       this.handleGravity(timeDiff, player, map);
     }
     if (this.player.y < this.BOARD_DIM / 2) {
@@ -14314,29 +14314,16 @@ class Game {
     this.player.render(this.context);
     this.water.render();
     if (this.gameOver) {
-      Object(__WEBPACK_IMPORTED_MODULE_5__display__["b" /* endGame */])(this.context, this.score, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["a" /* displayGameOver */])(this.context, this.score, this.BOARD_DIM);
     } else {
-      Object(__WEBPACK_IMPORTED_MODULE_5__display__["a" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
-    }
-  }
-
-  getTilePos(x, y) {
-    const column = Math.floor(x / this.TILE_SIZE);
-    const row = Math.floor(y / this.TILE_SIZE);
-    return [row + 1, column];
-  }
-
-  checkForGameOver(player) {
-    const nextY = player.y + player.yVel;
-    if (nextY > this.BOARD_DIM - this.TILE_SIZE || nextY > this.water.level) {
-      this.gameOver = true;
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["b" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
     }
   }
 
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
-    const nextPlayer = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([nextX, nextY], this.TILE_SIZE);
+    const nextPlayer = {x:nextX, y:nextY, size:this.TILE_SIZE};
     const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
@@ -14372,13 +14359,20 @@ class Game {
     }
   }
 
-  handleFriction(timeDiff) {
-    if (this.player.xVel > 0) {
-      this.player.xVel -= this.FRICTION * timeDiff;
-      if (this.player.xVel < 0) { this.player.xVel = 0; }
-    } else if (this.player.xVel < 0) {
-      this.player.xVel += this.FRICTION * timeDiff;
-      if (this.player.xVel > 0) { this.player.xVel = 0; }
+  checkForGameOver(player) {
+    const nextY = player.y + player.yVel;
+    if (nextY > this.BOARD_DIM - this.TILE_SIZE || nextY > this.water.level) {
+      this.gameOver = true;
+    }
+  }
+
+  handleFriction(timeDiff, player) {
+    if (player.xVel > 0) {
+      player.xVel -= this.FRICTION * timeDiff;
+      if (player.xVel < 0) { player.xVel = 0; }
+    } else if (player.xVel < 0) {
+      player.xVel += this.FRICTION * timeDiff;
+      if (player.xVel > 0) { player.xVel = 0; }
     }
   }
 
@@ -14387,15 +14381,20 @@ class Game {
       player.yVel = 0;
     } else {
       player.yVel += this.GRAVITY * timeDiff;
-      if (player.yVel > this.MAX_FALL_VEL) {
-        player.yVel = this.MAX_FALL_VEL;
-      }
+      if (player.yVel > this.MAX_FALL_VEL) { player.yVel = this.MAX_FALL_VEL; }
     }
   }
 
   isStanding(player, map) {
-    const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
-    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
+    const tilePos = this.getTilePos(player.x, player.y - map.offSet);
+    return (map.tile(tilePos[0]+1, tilePos[1]).collides ||
+      (player.x % this.TILE_SIZE !== 0 && map.tile(tilePos[0]+1, tilePos[1]+1).collides));
+  }
+
+  getTilePos(x, y) {
+    const column = Math.floor(x / this.TILE_SIZE);
+    const row = Math.floor(y / this.TILE_SIZE);
+    return [row + 1, column];
   }
 
   keyPress(event, pressed) {
@@ -14903,11 +14902,7 @@ class Water {
   }
 
   animate() {
-    if (this.waterImg === this.waterImg1) {
-      this.waterImg = this.waterImg2;
-    } else {
-      this.waterImg = this.waterImg1;
-    }
+    this.waterImg = this.waterImg === this.waterImg1 ? this.waterImg2 : this.waterImg1;
   }
 
   render() {
@@ -27146,7 +27141,6 @@ class Score {
     this.currentScore = 0;
     this.submittedScore = false;
   }
-
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Score);
@@ -27170,10 +27164,10 @@ const displayScore = (context, score, tileSize, boardDim) => {
   context.fillStyle = "#1e2a3d";
   context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = displayScore;
+/* harmony export (immutable) */ __webpack_exports__["b"] = displayScore;
 
 
-const splashScreen = (context, boardDim) => {
+const displaySplashScreen = (context, boardDim) => {
   context.save();
   context.globalAlpha = 0.7;
   context.rect(0, 0, boardDim, boardDim);
@@ -27231,10 +27225,10 @@ const splashScreen = (context, boardDim) => {
   context.rect(boardDim/4, 500, 50, 50);
   context.fill();
 };
-/* harmony export (immutable) */ __webpack_exports__["c"] = splashScreen;
+/* harmony export (immutable) */ __webpack_exports__["c"] = displaySplashScreen;
 
 
-const endGame = (context, score, boardDim) => {
+const displayGameOver = (context, score, boardDim) => {
   context.font = "42px press_start_2pregular";
   context.strokeStyle = "black";
   context.lineWidth = 6;
@@ -27258,7 +27252,7 @@ const endGame = (context, score, boardDim) => {
     });
   }
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = endGame;
+/* harmony export (immutable) */ __webpack_exports__["a"] = displayGameOver;
 
 
 const strokeAndFill = (context, text, x, y) => {

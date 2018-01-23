@@ -12,7 +12,7 @@ export const displayScore = (context, score, tileSize, boardDim) => {
   context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
 };
 
-export const splashScreen = (context, boardDim) => {
+export const displaySplashScreen = (context, boardDim) => {
   context.save();
   context.globalAlpha = 0.7;
   context.rect(0, 0, boardDim, boardDim);
@@ -71,7 +71,7 @@ export const splashScreen = (context, boardDim) => {
   context.fill();
 };
 
-export const endGame = (context, score, boardDim) => {
+export const displayGameOver = (context, score, boardDim) => {
   context.font = "42px press_start_2pregular";
   context.strokeStyle = "black";
   context.lineWidth = 6;

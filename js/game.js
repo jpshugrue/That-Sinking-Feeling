@@ -3,7 +3,7 @@ import Map from './map';
 import Water from './water';
 import Background from './background';
 import Score from './score';
-import { splashScreen, endGame, displayScore } from './display';
+import { displaySplashScreen, displayGameOver, displayScore } from './display';
 
 class Game {
 
@@ -66,7 +66,7 @@ class Game {
     this.render();
     window.requestAnimationFrame(this.main);
     if (this.splashScreen) {
-      splashScreen(this.context, this.BOARD_DIM);
+      displaySplashScreen(this.context, this.BOARD_DIM);
     }
   }
 
@@ -92,7 +92,7 @@ class Game {
         player.x += player.xVel;
       }
       player.y += player.yVel;
-      this.handleFriction(timeDiff);
+      this.handleFriction(timeDiff, player);
       this.handleGravity(timeDiff, player, map);
     }
     if (this.player.y < this.BOARD_DIM / 2) {
@@ -110,29 +110,16 @@ class Game {
     this.player.render(this.context);
     this.water.render();
     if (this.gameOver) {
-      endGame(this.context, this.score, this.BOARD_DIM);
+      displayGameOver(this.context, this.score, this.BOARD_DIM);
     } else {
       displayScore(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
-    }
-  }
-
-  getTilePos(x, y) {
-    const column = Math.floor(x / this.TILE_SIZE);
-    const row = Math.floor(y / this.TILE_SIZE);
-    return [row + 1, column];
-  }
-
-  checkForGameOver(player) {
-    const nextY = player.y + player.yVel;
-    if (nextY > this.BOARD_DIM - this.TILE_SIZE || nextY > this.water.level) {
-      this.gameOver = true;
     }
   }
 
   checkForCollisions(player, map) {
     const nextX = player.x + player.xVel;
     const nextY = player.y + player.yVel;
-    const nextPlayer = new Player([nextX, nextY], this.TILE_SIZE);
+    const nextPlayer = {x:nextX, y:nextY, size:this.TILE_SIZE};
     const tilePos = this.getTilePos(nextX, nextY - map.offSet);
     let nextRow = tilePos[0];
     let nextCol = tilePos[1];
@@ -168,13 +155,20 @@ class Game {
     }
   }
 
-  handleFriction(timeDiff) {
-    if (this.player.xVel > 0) {
-      this.player.xVel -= this.FRICTION * timeDiff;
-      if (this.player.xVel < 0) { this.player.xVel = 0; }
-    } else if (this.player.xVel < 0) {
-      this.player.xVel += this.FRICTION * timeDiff;
-      if (this.player.xVel > 0) { this.player.xVel = 0; }
+  checkForGameOver(player) {
+    const nextY = player.y + player.yVel;
+    if (nextY > this.BOARD_DIM - this.TILE_SIZE || nextY > this.water.level) {
+      this.gameOver = true;
+    }
+  }
+
+  handleFriction(timeDiff, player) {
+    if (player.xVel > 0) {
+      player.xVel -= this.FRICTION * timeDiff;
+      if (player.xVel < 0) { player.xVel = 0; }
+    } else if (player.xVel < 0) {
+      player.xVel += this.FRICTION * timeDiff;
+      if (player.xVel > 0) { player.xVel = 0; }
     }
   }
 
@@ -183,15 +177,20 @@ class Game {
       player.yVel = 0;
     } else {
       player.yVel += this.GRAVITY * timeDiff;
-      if (player.yVel > this.MAX_FALL_VEL) {
-        player.yVel = this.MAX_FALL_VEL;
-      }
+      if (player.yVel > this.MAX_FALL_VEL) { player.yVel = this.MAX_FALL_VEL; }
     }
   }
 
   isStanding(player, map) {
-    const tilePos = this.getTilePos(this.player.x, this.player.y - this.map.offSet);
-    return (this.map.tile(tilePos[0]+1, tilePos[1]).collides || (this.player.x % this.TILE_SIZE !== 0 && this.map.tile(tilePos[0]+1, tilePos[1]+1).collides));
+    const tilePos = this.getTilePos(player.x, player.y - map.offSet);
+    return (map.tile(tilePos[0]+1, tilePos[1]).collides ||
+      (player.x % this.TILE_SIZE !== 0 && map.tile(tilePos[0]+1, tilePos[1]+1).collides));
+  }
+
+  getTilePos(x, y) {
+    const column = Math.floor(x / this.TILE_SIZE);
+    const row = Math.floor(y / this.TILE_SIZE);
+    return [row + 1, column];
   }
 
   keyPress(event, pressed) {

@@ -42,11 +42,7 @@ class Water {
   }
 
   animate() {
-    if (this.waterImg === this.waterImg1) {
-      this.waterImg = this.waterImg2;
-    } else {
-      this.waterImg = this.waterImg1;
-    }
+    this.waterImg = this.waterImg === this.waterImg1 ? this.waterImg2 : this.waterImg1;
   }
 
   render() {

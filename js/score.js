@@ -60,7 +60,6 @@ class Score {
     this.currentScore = 0;
     this.submittedScore = false;
   }
-
 }
 
 export default Score;
