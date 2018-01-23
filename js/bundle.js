@@ -14398,11 +14398,7 @@ class Game {
   }
 
   keyPress(event, pressed) {
-    if (pressed) {
-      this.keyDown = true;
-    } else {
-      this.keyDown = false;
-    }
+    this.keyDown = pressed ? true : false;
     switch(event.key) {
       case "ArrowLeft":
         this.player.left = pressed;
