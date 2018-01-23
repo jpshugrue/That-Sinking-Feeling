@@ -14270,7 +14270,7 @@ class Game {
     this.render();
     window.requestAnimationFrame(this.main);
     if (this.splashScreen) {
-      Object(__WEBPACK_IMPORTED_MODULE_5__display__["b" /* splashScreen */])(this.context, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["c" /* splashScreen */])(this.context, this.BOARD_DIM);
     }
   }
 
@@ -14314,12 +14314,9 @@ class Game {
     this.player.render(this.context);
     this.water.render();
     if (this.gameOver) {
-      Object(__WEBPACK_IMPORTED_MODULE_5__display__["a" /* endGame */])(this.context, this.score, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["b" /* endGame */])(this.context, this.score, this.BOARD_DIM);
     } else {
-      this.context.textAlign = "left";
-      this.context.font = '16px fippsregular';
-      this.context.fillStyle = "#1e2a3d";
-      this.context.fillText(`Score: ${Math.floor(this.score.currentScore)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
+      Object(__WEBPACK_IMPORTED_MODULE_5__display__["a" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
     }
   }
 
@@ -27167,6 +27164,15 @@ rightArrowImg.src = 'images/sprites/right-arrow.png';
 const spacebarImg = new Image(274, 40);
 spacebarImg.src = 'images/sprites/spacebar.png';
 
+const displayScore = (context, score, tileSize, boardDim) => {
+  context.textAlign = "left";
+  context.font = '16px fippsregular';
+  context.fillStyle = "#1e2a3d";
+  context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = displayScore;
+
+
 const splashScreen = (context, boardDim) => {
   context.save();
   context.globalAlpha = 0.7;
@@ -27225,7 +27231,7 @@ const splashScreen = (context, boardDim) => {
   context.rect(boardDim/4, 500, 50, 50);
   context.fill();
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = splashScreen;
+/* harmony export (immutable) */ __webpack_exports__["c"] = splashScreen;
 
 
 const endGame = (context, score, boardDim) => {
@@ -27252,7 +27258,7 @@ const endGame = (context, score, boardDim) => {
     });
   }
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = endGame;
+/* harmony export (immutable) */ __webpack_exports__["b"] = endGame;
 
 
 const strokeAndFill = (context, text, x, y) => {

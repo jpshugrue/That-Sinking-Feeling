@@ -5,6 +5,13 @@ rightArrowImg.src = 'images/sprites/right-arrow.png';
 const spacebarImg = new Image(274, 40);
 spacebarImg.src = 'images/sprites/spacebar.png';
 
+export const displayScore = (context, score, tileSize, boardDim) => {
+  context.textAlign = "left";
+  context.font = '16px fippsregular';
+  context.fillStyle = "#1e2a3d";
+  context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
+};
+
 export const splashScreen = (context, boardDim) => {
   context.save();
   context.globalAlpha = 0.7;

@@ -3,7 +3,7 @@ import Map from './map';
 import Water from './water';
 import Background from './background';
 import Score from './score';
-import { splashScreen, endGame } from './display';
+import { splashScreen, endGame, displayScore } from './display';
 
 class Game {
 
@@ -112,10 +112,7 @@ class Game {
     if (this.gameOver) {
       endGame(this.context, this.score, this.BOARD_DIM);
     } else {
-      this.context.textAlign = "left";
-      this.context.font = '16px fippsregular';
-      this.context.fillStyle = "#1e2a3d";
-      this.context.fillText(`Score: ${Math.floor(this.score.currentScore)}`, this.TILE_SIZE + 5, this.BOARD_DIM - 5);
+      displayScore(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
     }
   }
 
