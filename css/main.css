@@ -50,26 +50,11 @@ header {
 }
 
 canvas {
-  /* border: 1px solid black; */
   margin: 0 auto;
-  /* padding-left: 150px;
-  padding-right: 150px; */
 }
 
 main {
   display: flex;
-  /* flex-direction: column; */
-  /* align-items: center; */
-}
-
-main span {
-  /* float: left; */
-  color: white;
-  font-family: wide_pixel-7regular;
-  font-size: 25px;
-  width: 150px;
-  text-align: right;
-  /* margin-right: -150px; */
 }
 
 header span {
