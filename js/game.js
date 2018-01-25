@@ -26,7 +26,6 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.main = this.main.bind(this);
-    // rotate = rotate.bind(this);
   }
 
   newGame() {

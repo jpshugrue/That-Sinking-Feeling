@@ -14230,7 +14230,6 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.main = this.main.bind(this);
-    // rotate = rotate.bind(this);
   }
 
   newGame() {
@@ -14888,8 +14887,8 @@ class Water {
   }
 
   update(timeDiff) {
-    if (this.level <= 0) {
-      this.level = 0;
+    if (this.level <= -10) {
+      this.level = -10;
     } else {
       this.level -= timeDiff * this.speed;
     }
