@@ -21,20 +21,12 @@ export const displaySplashScreen = (context, boardDim) => {
 
   context.strokeStyle = "white";
   context.lineWidth = 3;
-  context.beginPath();
-  context.moveTo(boardDim/3, 100);
-  context.lineTo((boardDim/3) * 2, 100);
-  context.stroke();
+  const startX = boardDim/3;
+  const endX = boardDim/3 * 2;
 
-  context.beginPath();
-  context.moveTo(boardDim/3, 275);
-  context.lineTo((boardDim/3) * 2, 275);
-  context.stroke();
-
-  context.beginPath();
-  context.moveTo(boardDim/3, 460);
-  context.lineTo((boardDim/3) * 2, 460);
-  context.stroke();
+  drawHorizonLine(context, startX, endX, 100);
+  drawHorizonLine(context, startX, endX, 275);
+  drawHorizonLine(context, startX, endX, 460);
 
   context.font = "18px press_start_2pregular";
   context.strokeStyle = "black";
@@ -99,4 +91,11 @@ export const displayGameOver = (context, score, boardDim) => {
 const strokeAndFill = (context, text, x, y) => {
   context.strokeText(text, x, y);
   context.fillText(text, x, y);
+};
+
+const drawHorizonLine = (context, startX, endX, y) => {
+  context.beginPath();
+  context.moveTo(startX, y);
+  context.lineTo(endX, y);
+  context.stroke();
 };
