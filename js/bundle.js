@@ -14230,16 +14230,18 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.main = this.main.bind(this);
-
-    this.rotationDeg = 0;
-    this.rotationCounter = 0;
-    this.rotateRight = true;
+    // rotate = rotate.bind(this);
   }
 
   newGame() {
     this.timeDiff = 0;
     this.keyDown = false;
     this.gameOver = false;
+
+    this.rotationDeg = 0;
+    this.rotationCounter = 0;
+    this.rotateRight = true;
+
     if (this.map) {
       this.map.reset();
       this.player.reset([330,500]);
@@ -14278,40 +14280,8 @@ class Game {
     }
   }
 
-  rotate(timeDiff) {
-    this.rotationCounter += timeDiff;
-    if (this.rotationCounter > 0.04) {
-      this.rotationCounter = 0;
-      if (this.rotateRight) {
-        this.rotationDeg += 0.05;
-        if (this.rotationDeg > 2) {
-          this.rotateRight = false;
-        } else {
-          this.context.translate(this.BOARD_DIM/2, this.BOARD_DIM/2);
-          // this.context.scale(1+this.rotationDeg/2000, 1+this.rotationDeg/2000);
-          this.context.rotate(0.05 * Math.PI/180);
-          this.context.translate(-this.BOARD_DIM/2, -this.BOARD_DIM/2);
-        }
-      } else {
-        this.rotationDeg -= 0.05;
-        if (this.rotationDeg < -2) {
-          this.rotateRight = true;
-        } else {
-          this.context.translate(this.BOARD_DIM/2, this.BOARD_DIM/2);
-          // this.context.scale(1+this.rotationDeg/2000, 1+this.rotationDeg/2000);
-          this.context.rotate(-0.05 * Math.PI/180);
-          this.context.translate(-this.BOARD_DIM/2, -this.BOARD_DIM/2);
-        }
-      }
-    }
-
-
-// ctx3.translate(0,-50);
-// ctx3.drawImage(canvas, 0,0);
-  }
-
   update(timeDiff, player, map) {
-    this.rotate(timeDiff);
+    Object(__WEBPACK_IMPORTED_MODULE_5__display__["d" /* rotate */])(this, timeDiff);
     this.score.currentScore += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
@@ -27190,6 +27160,22 @@ const rightArrowImg = new Image(46, 46);
 rightArrowImg.src = 'images/sprites/right-arrow.png';
 const spacebarImg = new Image(274, 40);
 spacebarImg.src = 'images/sprites/spacebar.png';
+
+const rotate = (game, timeDiff) => {
+  game.rotationCounter += timeDiff;
+  if (game.rotationCounter > 0.04) {
+    game.rotationCounter = 0;
+    const rotationMod = game.rotateRight ? 0.05 : -0.05;
+    game.rotationDeg += rotationMod;
+    if (game.rotationDeg > 1.6) { game.rotateRight = false; }
+    if (game.rotationDeg < -1.6) { game.rotateRight = true; }
+    game.context.translate(game.BOARD_DIM/2, game.BOARD_DIM/2);
+    game.context.rotate(rotationMod * Math.PI/180);
+    game.context.translate(-game.BOARD_DIM/2, -game.BOARD_DIM/2);
+  }
+};
+/* harmony export (immutable) */ __webpack_exports__["d"] = rotate;
+
 
 const displayScore = (context, score, tileSize, boardDim) => {
   context.textAlign = "left";

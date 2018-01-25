@@ -5,6 +5,20 @@ rightArrowImg.src = 'images/sprites/right-arrow.png';
 const spacebarImg = new Image(274, 40);
 spacebarImg.src = 'images/sprites/spacebar.png';
 
+export const rotate = (game, timeDiff) => {
+  game.rotationCounter += timeDiff;
+  if (game.rotationCounter > 0.04) {
+    game.rotationCounter = 0;
+    const rotationMod = game.rotateRight ? 0.05 : -0.05;
+    game.rotationDeg += rotationMod;
+    if (game.rotationDeg > 1.6) { game.rotateRight = false; }
+    if (game.rotationDeg < -1.6) { game.rotateRight = true; }
+    game.context.translate(game.BOARD_DIM/2, game.BOARD_DIM/2);
+    game.context.rotate(rotationMod * Math.PI/180);
+    game.context.translate(-game.BOARD_DIM/2, -game.BOARD_DIM/2);
+  }
+};
+
 export const displayScore = (context, score, tileSize, boardDim) => {
   context.textAlign = "left";
   context.font = '16px fippsregular';
