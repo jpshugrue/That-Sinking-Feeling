@@ -14230,6 +14230,10 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.main = this.main.bind(this);
+
+    this.rotationDeg = 0;
+    this.rotationCounter = 0;
+    this.rotateRight = true;
   }
 
   newGame() {
@@ -14274,7 +14278,40 @@ class Game {
     }
   }
 
+  rotate(timeDiff) {
+    this.rotationCounter += timeDiff;
+    if (this.rotationCounter > 0.04) {
+      this.rotationCounter = 0;
+      if (this.rotateRight) {
+        this.rotationDeg += 0.05;
+        if (this.rotationDeg > 2) {
+          this.rotateRight = false;
+        } else {
+          this.context.translate(this.BOARD_DIM/2, this.BOARD_DIM/2);
+          // this.context.scale(1+this.rotationDeg/2000, 1+this.rotationDeg/2000);
+          this.context.rotate(0.05 * Math.PI/180);
+          this.context.translate(-this.BOARD_DIM/2, -this.BOARD_DIM/2);
+        }
+      } else {
+        this.rotationDeg -= 0.05;
+        if (this.rotationDeg < -2) {
+          this.rotateRight = true;
+        } else {
+          this.context.translate(this.BOARD_DIM/2, this.BOARD_DIM/2);
+          // this.context.scale(1+this.rotationDeg/2000, 1+this.rotationDeg/2000);
+          this.context.rotate(-0.05 * Math.PI/180);
+          this.context.translate(-this.BOARD_DIM/2, -this.BOARD_DIM/2);
+        }
+      }
+    }
+
+
+// ctx3.translate(0,-50);
+// ctx3.drawImage(canvas, 0,0);
+  }
+
   update(timeDiff, player, map) {
+    this.rotate(timeDiff);
     this.score.currentScore += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
@@ -14925,25 +14962,25 @@ class Background {
     this.boardDim = boardDim;
 
     this.bg1 = new Image(this.boardDim, this.boardDim);
-    this.bg1.src = 'images/sprites/bg_orig.gif';
+    this.bg1.src = 'images/sprites/bg_expan.gif';
     this.bg1y = 0;
 
     this.bg2 = new Image(this.boardDim, this.boardDim);
-    this.bg2.src = 'images/sprites/bg_orig.gif';
-    this.bg2y = -this.boardDim;
+    this.bg2.src = 'images/sprites/bg_expan.gif';
+    this.bg2y = -800;
 
     this.pixelCount = 0;
   }
 
   render() {
-    this.context.drawImage(this.bg1, 0, this.bg1y);
-    this.context.drawImage(this.bg2, 0, this.bg2y);
+    this.context.drawImage(this.bg1, -16, this.bg1y);
+    this.context.drawImage(this.bg2, -16, this.bg2y);
   }
 
   reset() {
     this.pixelCount = 0;
     this.bg1y = 0;
-    this.bg2y = -this.boardDim;
+    this.bg2y = -800;
   }
 
   panBackground() {
@@ -14952,9 +14989,9 @@ class Background {
       this.pixelCount = 0;
       this.bg1y += 1;
       this.bg2y += 1;
-      if (this.bg1y >= this.boardDim) {
+      if (this.bg1y >= 800) {
         this.bg1y = -this.boardDim;
-      } else if(this.bg2y >= this.boardDim) {
+      } else if(this.bg2y >= 800) {
         this.bg2y = -this.boardDim;
       }
     }
