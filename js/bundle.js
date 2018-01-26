@@ -14995,7 +14995,6 @@ class Score {
     };
     __WEBPACK_IMPORTED_MODULE_0_firebase__["initializeApp"](config);
     __WEBPACK_IMPORTED_MODULE_0_firebase__["auth"]().signInAnonymously().then((success) => {
-      console.log("signed in and executed setup");
       this.database = __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]();
       this.loadHighScore(this.database);
     });
@@ -15004,11 +15003,9 @@ class Score {
   loadHighScore(database) {
     const dbref = database.ref().child('highscores');
     dbref.once('value').then((snapshot) => {
-      console.log("We have our once event");
       this.sortHighScores(snapshot.val());
     });
     dbref.on('value', (snapshot) => {
-      console.log("We have our on event");
       this.sortHighScores(snapshot.val());
     });
   }
@@ -15027,7 +15024,7 @@ class Score {
   }
 
   checkIfHighScore() {
-    return (!this.submittedScore && (this.highscores.length < 10 ||
+    return (!this.submittedScore && this.highscores && (this.highscores.length < 10 ||
       this.highscores[0].score < this.currentScore));
   }
 
