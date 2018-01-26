@@ -14229,7 +14229,21 @@ class Game {
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
+    this.audioPlayer = document.getElementById('audioPlayer');
+
+    $(".audioControl").on('click', this.audioSwitch.bind(this));
+
     this.main = this.main.bind(this);
+  }
+
+  audioSwitch() {
+    if (this.audioPlayer.paused) {
+      $(".audioControl").html("Click<br>To<br>Mute<br><i class='fa fa-volume-off' aria-hidden='true'></i>");
+      this.audioPlayer.play();
+    } else {
+      $(".audioControl").html("Click<br>For<br>Sound<br><i class='fa fa-volume-up' aria-hidden='true'></i>");
+      this.audioPlayer.pause();
+    }
   }
 
   newGame() {

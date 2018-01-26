@@ -49,12 +49,20 @@ header {
   text-align: center;
 }
 
-canvas {
-  margin: 0 auto;
-}
-
 main {
   display: flex;
+  justify-content: center;
+}
+
+.audioControl {
+  padding: 200px 15px 0px 15px;
+  text-align: center;
+  color: white;
+  font-family: press_start_2pregular;
+}
+
+.audioControl i {
+  font-size: 32px;
 }
 
 header span {
