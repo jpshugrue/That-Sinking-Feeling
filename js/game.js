@@ -3,6 +3,7 @@ import Map from './map';
 import Water from './water';
 import Background from './background';
 import Score from './score';
+import Sound from './sound';
 import { displaySplashScreen, displayGameOver, displayScore } from './display';
 
 class Game {
@@ -25,23 +26,9 @@ class Game {
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
-    this.bgMusic = new Audio('./sounds/bg_music.mp3');
-    this.jumpSound = new Audio('./sounds/jump.mp3');
-    this.gameOverSound = new Audio('./sounds/game_over.mp3');
-
-    $(".audioControl").on('click', this.audioSwitch.bind(this));
+    this.sound = new Sound();
 
     this.main = this.main.bind(this);
-  }
-
-  audioSwitch() {
-    if (this.bgMusic.paused) {
-      $(".audioControl").html("Click<br>To<br>Mute<br><i class='fa fa-volume-off' aria-hidden='true'></i>");
-      this.bgMusic.play();
-    } else {
-      $(".audioControl").html("Click<br>For<br>Sound<br><i class='fa fa-volume-up' aria-hidden='true'></i>");
-      this.bgMusic.pause();
-    }
   }
 
   newGame() {
@@ -102,7 +89,7 @@ class Game {
     if (player.jump) {
       if (player.yVel === 0) {
         player.yVel = this.MAX_JUMP_VEL;
-        this.jumpSound.play();
+        this.sound.jump();
       }
     }
     this.checkForGameOver(player);
@@ -115,7 +102,7 @@ class Game {
       this.handleFriction(timeDiff, player);
       this.handleGravity(timeDiff, player, map);
     } else {
-      this.gameOverSound.play();
+      this.sound.gameOver();
     }
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
