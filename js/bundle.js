@@ -14230,6 +14230,8 @@ class Game {
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
     this.bgMusic = new Audio('./sounds/bg_music.mp3');
+    this.jumpSound = new Audio('./sounds/jump.mp3');
+    this.gameOverSound = new Audio('./sounds/game_over.mp3');
 
     $(".audioControl").on('click', this.audioSwitch.bind(this));
 
@@ -14302,7 +14304,10 @@ class Game {
       if (player.xVel > this.MAX_HORIZONTAL_VEL) { player.xVel = this.MAX_HORIZONTAL_VEL; }
     }
     if (player.jump) {
-      if (player.yVel === 0) { player.yVel = this.MAX_JUMP_VEL; }
+      if (player.yVel === 0) {
+        player.yVel = this.MAX_JUMP_VEL;
+        this.jumpSound.play();
+      }
     }
     this.checkForGameOver(player);
     if (!this.gameOver) {
@@ -14313,6 +14318,8 @@ class Game {
       player.y += player.yVel;
       this.handleFriction(timeDiff, player);
       this.handleGravity(timeDiff, player, map);
+    } else {
+      this.gameOverSound.play();
     }
     if (this.player.y < this.BOARD_DIM / 2) {
       this.map.nextPixel();
