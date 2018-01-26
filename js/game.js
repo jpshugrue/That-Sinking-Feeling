@@ -25,7 +25,7 @@ class Game {
     document.addEventListener('keydown', (event) => (this.keyPress(event, true)));
     document.addEventListener('keyup', (event) => (this.keyPress(event, false)));
 
-    this.audioPlayer = document.getElementById('audioPlayer');
+    this.bgMusic = new Audio('./sounds/bg_music.mp3');
 
     $(".audioControl").on('click', this.audioSwitch.bind(this));
 
@@ -33,12 +33,12 @@ class Game {
   }
 
   audioSwitch() {
-    if (this.audioPlayer.paused) {
+    if (this.bgMusic.paused) {
       $(".audioControl").html("Click<br>To<br>Mute<br><i class='fa fa-volume-off' aria-hidden='true'></i>");
-      this.audioPlayer.play();
+      this.bgMusic.play();
     } else {
       $(".audioControl").html("Click<br>For<br>Sound<br><i class='fa fa-volume-up' aria-hidden='true'></i>");
-      this.audioPlayer.pause();
+      this.bgMusic.pause();
     }
   }
 
