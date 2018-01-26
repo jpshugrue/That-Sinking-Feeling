@@ -17,10 +17,21 @@ class Score {
       messagingSenderId: "676176501519"
     };
     firebase.initializeApp(config);
-    firebase.auth().signInAnonymously();
-    this.database = firebase.database();
-    const dbref = this.database.ref().child('highscores');
+    firebase.auth().signInAnonymously().then((success) => {
+      console.log("signed in and executed setup");
+      this.database = firebase.database();
+      this.loadHighScore(this.database);
+    });
+  }
+
+  loadHighScore(database) {
+    const dbref = database.ref().child('highscores');
+    dbref.once('value').then((snapshot) => {
+      console.log("We have our once event");
+      this.sortHighScores(snapshot.val());
+    });
     dbref.on('value', (snapshot) => {
+      console.log("We have our on event");
       this.sortHighScores(snapshot.val());
     });
   }

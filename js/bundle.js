@@ -14994,10 +14994,21 @@ class Score {
       messagingSenderId: "676176501519"
     };
     __WEBPACK_IMPORTED_MODULE_0_firebase__["initializeApp"](config);
-    __WEBPACK_IMPORTED_MODULE_0_firebase__["auth"]().signInAnonymously();
-    this.database = __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]();
-    const dbref = this.database.ref().child('highscores');
+    __WEBPACK_IMPORTED_MODULE_0_firebase__["auth"]().signInAnonymously().then((success) => {
+      console.log("signed in and executed setup");
+      this.database = __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]();
+      this.loadHighScore(this.database);
+    });
+  }
+
+  loadHighScore(database) {
+    const dbref = database.ref().child('highscores');
+    dbref.once('value').then((snapshot) => {
+      console.log("We have our once event");
+      this.sortHighScores(snapshot.val());
+    });
     dbref.on('value', (snapshot) => {
+      console.log("We have our on event");
       this.sortHighScores(snapshot.val());
     });
   }
