@@ -3,7 +3,7 @@ import Map from './map';
 import Water from './water';
 import Background from './background';
 import Score from './score';
-import { displaySplashScreen, displayGameOver, displayScore, rotate } from './display';
+import { displaySplashScreen, displayGameOver, displayScore } from './display';
 
 class Game {
 
@@ -32,10 +32,6 @@ class Game {
     this.timeDiff = 0;
     this.keyDown = false;
     this.gameOver = false;
-
-    this.rotationDeg = 0;
-    this.rotationCounter = 0;
-    this.rotateRight = true;
 
     if (this.map) {
       this.map.reset();
@@ -76,7 +72,6 @@ class Game {
   }
 
   update(timeDiff, player, map) {
-    rotate(this, timeDiff);
     this.score.currentScore += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
