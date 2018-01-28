@@ -14224,6 +14224,7 @@ class Game {
     this.FRAME = 1/60;
 
     this.splashScreen = true;
+    this.paused = false;
 
     const canvas = document.getElementById('gameCanvas');
     this.context = canvas.getContext('2d');
@@ -14260,9 +14261,9 @@ class Game {
   }
 
   main() {
-    if (!this.splashScreen) {
-      let then = this.now;
-      this.now = Date.now();
+    let then = this.now;
+    this.now = Date.now();
+    if (!this.splashScreen && !this.paused) {
       this.timeDiff = this.timeDiff + Math.min(1, (this.now - then) / 1000.0);
       while(this.timeDiff > this.FRAME) {
         this.timeDiff = this.timeDiff - this.FRAME;
@@ -14425,6 +14426,11 @@ class Game {
       case "Enter":
         if (this.score.checkIfHighScore()) {
           this.score.submitHighScore();
+        }
+        break;
+      case "Shift":
+        if(this.keyDown && !this.splashScreen && !this.gameOver) {
+          this.paused = this.paused ? false : true;
         }
         break;
       case "Backspace":
