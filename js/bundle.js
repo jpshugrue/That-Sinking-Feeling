@@ -27177,6 +27177,8 @@ const rightArrowImg = new Image(46, 46);
 rightArrowImg.src = 'images/sprites/right-arrow.png';
 const spacebarImg = new Image(274, 40);
 spacebarImg.src = 'images/sprites/spacebar.png';
+const shiftImg = new Image(98, 46);
+shiftImg.src = 'images/sprites/shift.png';
 
 const displayScore = (context, score, tileSize, boardDim) => {
   context.textAlign = "left";
@@ -27199,42 +27201,47 @@ const displaySplashScreen = (context, boardDim) => {
   const startX = boardDim/3;
   const endX = boardDim/3 * 2;
 
-  drawHorizonLine(context, startX, endX, 100);
-  drawHorizonLine(context, startX, endX, 275);
-  drawHorizonLine(context, startX, endX, 460);
+  drawHorizonLine(context, startX, endX, 85);
+  drawHorizonLine(context, startX, endX, 315);
+  drawHorizonLine(context, startX, endX, 500);
 
   context.font = "18px press_start_2pregular";
   context.strokeStyle = "black";
   context.lineWidth = 6;
   context.textAlign = "center";
   context.fillStyle = "white";
-  strokeAndFill(context,`To Start A New Game`,boardDim/2,50);
-  strokeAndFill(context,`Press The Space Bar`,boardDim/2,80);
+  strokeAndFill(context,`To Start A New Game`,boardDim/2,35);
+  strokeAndFill(context,`Press The Space Bar`,boardDim/2,65);
 
-  strokeAndFill(context,`How To Play`,boardDim/2,140);
+  strokeAndFill(context,`How To Play`,boardDim/2,125);
 
-  strokeAndFill(context,`The Story So Far`,boardDim/2,315);
+  strokeAndFill(context,`The Story So Far`,boardDim/2,355);
 
-  strokeAndFill(context,`Our Intrepid`,boardDim/3*2,520);
-  strokeAndFill(context,`Protagonist`,boardDim/3*2,550);
+  strokeAndFill(context,`Our Intrepid`,boardDim/3*2,550);
+  strokeAndFill(context,`Protagonist`,boardDim/3*2,580);
 
   context.font = "12px press_start_2pregular";
-  strokeAndFill(context,`Use The Arrow Keys`,boardDim/4,170);
-  strokeAndFill(context,`To Move`,boardDim/4,195);
-  context.drawImage(leftArrowImg, boardDim/4 - 69, 210);
-  context.drawImage(rightArrowImg, boardDim/4 + 23, 210);
+  strokeAndFill(context,`Use The Arrow Keys`,boardDim/4,155);
+  strokeAndFill(context,`To Move`,boardDim/4,180);
+  context.drawImage(leftArrowImg, boardDim/4 - 69, 195);
+  context.drawImage(rightArrowImg, boardDim/4 + 23, 195);
 
-  strokeAndFill(context,`Use The Space Bar`,boardDim/4*3,170);
-  strokeAndFill(context,`To Jump`,boardDim/4*3,195);
-  context.drawImage(spacebarImg, boardDim/4*3-137, 210);
 
-  strokeAndFill(context,`Your ship, the S.S. Blocktanic, has struck`,boardDim/2,340);
-  strokeAndFill(context,`a cubeberg and is sinking fast`,boardDim/2,365);
-  strokeAndFill(context,`Bad time to be taking a nap in the engine room!`,boardDim/2,390);
-  strokeAndFill(context,`Outrun the rising water to make it`,boardDim/2,415);
-  strokeAndFill(context,`to the surface`,boardDim/2,440);
+  strokeAndFill(context,`Use The Space Bar`,boardDim/4*3,155);
+  strokeAndFill(context,`To Jump`,boardDim/4*3,180);
+  context.drawImage(spacebarImg, boardDim/4*3-137, 195);
 
-  context.rect(boardDim/4, 500, 50, 50);
+  strokeAndFill(context,`Use The Shift Button`,boardDim/4+40,275);
+  strokeAndFill(context,`To Pause The Game`,boardDim/4+40,300);
+  context.drawImage(shiftImg, boardDim/3*2-49, 255);
+
+  strokeAndFill(context,`Your ship, the S.S. Blocktanic, has struck`,boardDim/2,380);
+  strokeAndFill(context,`a cubeberg and is sinking fast`,boardDim/2,405);
+  strokeAndFill(context,`Bad time to be taking a nap in the engine room!`,boardDim/2,430);
+  strokeAndFill(context,`Outrun the rising water to make it`,boardDim/2,455);
+  strokeAndFill(context,`to the surface`,boardDim/2,480);
+
+  context.rect(boardDim/4, 530, 50, 50);
   context.fill();
 };
 /* harmony export (immutable) */ __webpack_exports__["c"] = displaySplashScreen;
