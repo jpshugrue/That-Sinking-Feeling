@@ -27193,15 +27193,8 @@ const displayScore = (context, score, tileSize, boardDim) => {
 
 
 const displayPauseScreen = (context, boardDim) => {
-  context.fillStyle = "black";
-  context.save();
-  context.globalAlpha = 0.7;
-  context.rect(0, 0, boardDim, boardDim);
-  context.fill();
-  context.restore();
+  drawOpacityOverlay(context, boardDim);
 
-  context.strokeStyle = "white";
-  context.lineWidth = 3;
   const startX = boardDim/3;
   const endX = boardDim/3 * 2;
   drawHorizonLine(context, startX, endX, boardDim/2 - 50);
@@ -27222,14 +27215,8 @@ const displayPauseScreen = (context, boardDim) => {
 
 
 const displaySplashScreen = (context, boardDim) => {
-  context.save();
-  context.globalAlpha = 0.7;
-  context.rect(0, 0, boardDim, boardDim);
-  context.fill();
-  context.restore();
+  drawOpacityOverlay(context, boardDim);
 
-  context.strokeStyle = "white";
-  context.lineWidth = 3;
   const startX = boardDim/3;
   const endX = boardDim/3 * 2;
 
@@ -27312,10 +27299,21 @@ const strokeAndFill = (context, text, x, y) => {
 };
 
 const drawHorizonLine = (context, startX, endX, y) => {
+  context.strokeStyle = "white";
+  context.lineWidth = 3;
   context.beginPath();
   context.moveTo(startX, y);
   context.lineTo(endX, y);
   context.stroke();
+};
+
+const drawOpacityOverlay = (context, boardDim) => {
+  context.fillStyle = "#1e2a3d";
+  context.save();
+  context.globalAlpha = 0.7;
+  context.rect(0, 0, boardDim, boardDim);
+  context.fill();
+  context.restore();
 };
 
 
