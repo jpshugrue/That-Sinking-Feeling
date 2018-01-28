@@ -14,6 +14,33 @@ export const displayScore = (context, score, tileSize, boardDim) => {
   context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
 };
 
+export const displayPauseScreen = (context, boardDim) => {
+  context.fillStyle = "black";
+  context.save();
+  context.globalAlpha = 0.7;
+  context.rect(0, 0, boardDim, boardDim);
+  context.fill();
+  context.restore();
+
+  context.strokeStyle = "white";
+  context.lineWidth = 3;
+  const startX = boardDim/3;
+  const endX = boardDim/3 * 2;
+  drawHorizonLine(context, startX, endX, boardDim/2 - 50);
+
+  context.font = "30px press_start_2pregular";
+  context.strokeStyle = "black";
+  context.lineWidth = 6;
+  context.textAlign = "center";
+  context.fillStyle = "white";
+  strokeAndFill(context,`Paused`,boardDim/2,boardDim/2 - 80);
+
+  context.font = "18px press_start_2pregular";
+  strokeAndFill(context,`To Resume`,boardDim/2,boardDim/2);
+  strokeAndFill(context,`Press The Shift Key`,boardDim/2,boardDim/2 + 40);
+  context.drawImage(shiftImg, boardDim/2-49, boardDim/2 + 70);
+};
+
 export const displaySplashScreen = (context, boardDim) => {
   context.save();
   context.globalAlpha = 0.7;
@@ -56,7 +83,7 @@ export const displaySplashScreen = (context, boardDim) => {
   strokeAndFill(context,`To Jump`,boardDim/4*3,180);
   context.drawImage(spacebarImg, boardDim/4*3-137, 195);
 
-  strokeAndFill(context,`Use The Shift Button`,boardDim/4+40,275);
+  strokeAndFill(context,`Use The Shift Key`,boardDim/4+40,275);
   strokeAndFill(context,`To Pause The Game`,boardDim/4+40,300);
   context.drawImage(shiftImg, boardDim/3*2-49, 255);
 

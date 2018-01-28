@@ -14276,7 +14276,7 @@ class Game {
     this.render();
     window.requestAnimationFrame(this.main);
     if (this.splashScreen) {
-      Object(__WEBPACK_IMPORTED_MODULE_6__display__["c" /* displaySplashScreen */])(this.context, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_6__display__["d" /* displaySplashScreen */])(this.context, this.BOARD_DIM);
     }
   }
 
@@ -14324,10 +14324,13 @@ class Game {
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
+    if (this.paused) {
+      Object(__WEBPACK_IMPORTED_MODULE_6__display__["b" /* displayPauseScreen */])(this.context, this.BOARD_DIM);
+    }
     if (this.gameOver) {
       Object(__WEBPACK_IMPORTED_MODULE_6__display__["a" /* displayGameOver */])(this.context, this.score, this.BOARD_DIM);
     } else {
-      Object(__WEBPACK_IMPORTED_MODULE_6__display__["b" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
+      Object(__WEBPACK_IMPORTED_MODULE_6__display__["c" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
     }
   }
 
@@ -27186,7 +27189,36 @@ const displayScore = (context, score, tileSize, boardDim) => {
   context.fillStyle = "#1e2a3d";
   context.fillText(`Score: ${Math.floor(score.currentScore)}`, tileSize + 5, boardDim - 5);
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = displayScore;
+/* harmony export (immutable) */ __webpack_exports__["c"] = displayScore;
+
+
+const displayPauseScreen = (context, boardDim) => {
+  context.fillStyle = "black";
+  context.save();
+  context.globalAlpha = 0.7;
+  context.rect(0, 0, boardDim, boardDim);
+  context.fill();
+  context.restore();
+
+  context.strokeStyle = "white";
+  context.lineWidth = 3;
+  const startX = boardDim/3;
+  const endX = boardDim/3 * 2;
+  drawHorizonLine(context, startX, endX, boardDim/2 - 50);
+
+  context.font = "30px press_start_2pregular";
+  context.strokeStyle = "black";
+  context.lineWidth = 6;
+  context.textAlign = "center";
+  context.fillStyle = "white";
+  strokeAndFill(context,`Paused`,boardDim/2,boardDim/2 - 80);
+
+  context.font = "18px press_start_2pregular";
+  strokeAndFill(context,`To Resume`,boardDim/2,boardDim/2);
+  strokeAndFill(context,`Press The Shift Key`,boardDim/2,boardDim/2 + 40);
+  context.drawImage(shiftImg, boardDim/2-49, boardDim/2 + 70);
+};
+/* harmony export (immutable) */ __webpack_exports__["b"] = displayPauseScreen;
 
 
 const displaySplashScreen = (context, boardDim) => {
@@ -27231,7 +27263,7 @@ const displaySplashScreen = (context, boardDim) => {
   strokeAndFill(context,`To Jump`,boardDim/4*3,180);
   context.drawImage(spacebarImg, boardDim/4*3-137, 195);
 
-  strokeAndFill(context,`Use The Shift Button`,boardDim/4+40,275);
+  strokeAndFill(context,`Use The Shift Key`,boardDim/4+40,275);
   strokeAndFill(context,`To Pause The Game`,boardDim/4+40,300);
   context.drawImage(shiftImg, boardDim/3*2-49, 255);
 
@@ -27244,7 +27276,7 @@ const displaySplashScreen = (context, boardDim) => {
   context.rect(boardDim/4, 530, 50, 50);
   context.fill();
 };
-/* harmony export (immutable) */ __webpack_exports__["c"] = displaySplashScreen;
+/* harmony export (immutable) */ __webpack_exports__["d"] = displaySplashScreen;
 
 
 const displayGameOver = (context, score, boardDim) => {

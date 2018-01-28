@@ -4,7 +4,7 @@ import Water from './water';
 import Background from './background';
 import Score from './score';
 import Sound from './sound';
-import { displaySplashScreen, displayGameOver, displayScore } from './display';
+import { displaySplashScreen, displayGameOver, displayScore, displayPauseScreen } from './display';
 
 class Game {
 
@@ -119,6 +119,9 @@ class Game {
     this.map.render(this.context);
     this.player.render(this.context);
     this.water.render();
+    if (this.paused) {
+      displayPauseScreen(this.context, this.BOARD_DIM);
+    }
     if (this.gameOver) {
       displayGameOver(this.context, this.score, this.BOARD_DIM);
     } else {
