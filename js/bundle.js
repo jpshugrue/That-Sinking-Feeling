@@ -14201,8 +14201,8 @@ $(() => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__water__ = __webpack_require__(86);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__background__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__score__ = __webpack_require__(88);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sound__ = __webpack_require__(171);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__display__ = __webpack_require__(170);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sound__ = __webpack_require__(170);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__display__ = __webpack_require__(171);
 
 
 
@@ -14427,7 +14427,13 @@ class Game {
         event.preventDefault();
         break;
       case "Enter":
-        if (this.score.checkIfHighScore()) {
+        if (this.splashScreen) {
+          this.now = Date.now();
+          this.splashScreen = false;
+        } else if (this.keyDown && this.gameOver && !this.score.checkIfHighScore()) {
+          this.newGame();
+        } else if (this.score.checkIfHighScore()) {
+          this.keyDown = false;
           this.score.submitHighScore();
         }
         break;
@@ -14443,13 +14449,15 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        if (this.splashScreen) {
-          this.now = Date.now();
-          this.splashScreen = false;
-        } else if(this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
+        // if (this.splashScreen) {
+        //   this.now = Date.now();
+        //   this.splashScreen = false;
+        // } else
+        if (this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
-        } else if (this.gameOver && !this.score.checkIfHighScore()) {
-          this.newGame();
+        // }
+        // else if (this.gameOver && !this.score.checkIfHighScore()) {
+        //   this.newGame();
         } else if (!this.gameOver){
           this.player.jump = pressed;
         }
@@ -27174,6 +27182,48 @@ function stop(id) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class Sound {
+
+  constructor() {
+    this.bgMusic = new Audio('./sounds/bg_music.mp3');
+    this.jumpSound = new Audio('./sounds/jump.mp3');
+    this.gameOverSound = new Audio('./sounds/game_over.mp3');
+
+    $(".audioControl").on('click', this.audioSwitch.bind(this));
+  }
+
+  audioSwitch() {
+    if (this.bgMusic.paused) {
+      $(".audioControl").html("Click<br>To<br>Mute<br><i class='fa fa-volume-off' aria-hidden='true'></i>");
+      this.bgMusic.play();
+    } else {
+      $(".audioControl").html("Click<br>For<br>Sound<br><i class='fa fa-volume-up' aria-hidden='true'></i>");
+      this.bgMusic.pause();
+    }
+  }
+
+  jump() {
+    if (!this.bgMusic.paused) {
+      this.jumpSound.play();
+    }
+  }
+
+  gameOver() {
+    if (!this.bgMusic.paused) {
+      this.gameOverSound.play();
+    }
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Sound);
+
+
+/***/ }),
+/* 171 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 const leftArrowImg = new Image(46, 46);
 leftArrowImg.src = 'images/sprites/left-arrow.png';
 const rightArrowImg = new Image(46, 46);
@@ -27230,7 +27280,7 @@ const displaySplashScreen = (context, boardDim) => {
   context.textAlign = "center";
   context.fillStyle = "white";
   strokeAndFill(context,`To Start A New Game`,boardDim/2,35);
-  strokeAndFill(context,`Press The Space Bar`,boardDim/2,65);
+  strokeAndFill(context,`Press Enter`,boardDim/2,65);
 
   strokeAndFill(context,`How To Play`,boardDim/2,125);
 
@@ -27282,7 +27332,7 @@ const displayGameOver = (context, score, boardDim) => {
     strokeAndFill(context, `${score.name}`, boardDim/2, 290);
   } else {
     strokeAndFill(context, `To Start A New Game`, boardDim/2, 180);
-    strokeAndFill(context, `Press The Space Bar`, boardDim/2, 210);
+    strokeAndFill(context, `Press Enter`, boardDim/2, 210);
     strokeAndFill(context, `Current High Scores`, boardDim/2, 270);
     context.font = "14px press_start_2pregular";
     score.highscores.slice().reverse().forEach((highscore, idx) => {
@@ -27315,48 +27365,6 @@ const drawOpacityOverlay = (context, boardDim) => {
   context.fill();
   context.restore();
 };
-
-
-/***/ }),
-/* 171 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Sound {
-
-  constructor() {
-    this.bgMusic = new Audio('./sounds/bg_music.mp3');
-    this.jumpSound = new Audio('./sounds/jump.mp3');
-    this.gameOverSound = new Audio('./sounds/game_over.mp3');
-
-    $(".audioControl").on('click', this.audioSwitch.bind(this));
-  }
-
-  audioSwitch() {
-    if (this.bgMusic.paused) {
-      $(".audioControl").html("Click<br>To<br>Mute<br><i class='fa fa-volume-off' aria-hidden='true'></i>");
-      this.bgMusic.play();
-    } else {
-      $(".audioControl").html("Click<br>For<br>Sound<br><i class='fa fa-volume-up' aria-hidden='true'></i>");
-      this.bgMusic.pause();
-    }
-  }
-
-  jump() {
-    if (!this.bgMusic.paused) {
-      this.jumpSound.play();
-    }
-  }
-
-  gameOver() {
-    if (!this.bgMusic.paused) {
-      this.gameOverSound.play();
-    }
-  }
-
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Sound);
 
 
 /***/ })

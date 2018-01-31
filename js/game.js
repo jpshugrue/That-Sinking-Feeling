@@ -222,7 +222,13 @@ class Game {
         event.preventDefault();
         break;
       case "Enter":
-        if (this.score.checkIfHighScore()) {
+        if (this.splashScreen) {
+          this.now = Date.now();
+          this.splashScreen = false;
+        } else if (this.keyDown && this.gameOver && !this.score.checkIfHighScore()) {
+          this.newGame();
+        } else if (this.score.checkIfHighScore()) {
+          this.keyDown = false;
           this.score.submitHighScore();
         }
         break;
@@ -238,13 +244,15 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        if (this.splashScreen) {
-          this.now = Date.now();
-          this.splashScreen = false;
-        } else if(this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
+        // if (this.splashScreen) {
+        //   this.now = Date.now();
+        //   this.splashScreen = false;
+        // } else
+        if (this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
-        } else if (this.gameOver && !this.score.checkIfHighScore()) {
-          this.newGame();
+        // }
+        // else if (this.gameOver && !this.score.checkIfHighScore()) {
+        //   this.newGame();
         } else if (!this.gameOver){
           this.player.jump = pressed;
         }

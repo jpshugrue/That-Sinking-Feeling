@@ -50,7 +50,7 @@ export const displaySplashScreen = (context, boardDim) => {
   context.textAlign = "center";
   context.fillStyle = "white";
   strokeAndFill(context,`To Start A New Game`,boardDim/2,35);
-  strokeAndFill(context,`Press The Space Bar`,boardDim/2,65);
+  strokeAndFill(context,`Press Enter`,boardDim/2,65);
 
   strokeAndFill(context,`How To Play`,boardDim/2,125);
 
@@ -100,7 +100,7 @@ export const displayGameOver = (context, score, boardDim) => {
     strokeAndFill(context, `${score.name}`, boardDim/2, 290);
   } else {
     strokeAndFill(context, `To Start A New Game`, boardDim/2, 180);
-    strokeAndFill(context, `Press The Space Bar`, boardDim/2, 210);
+    strokeAndFill(context, `Press Enter`, boardDim/2, 210);
     strokeAndFill(context, `Current High Scores`, boardDim/2, 270);
     context.font = "14px press_start_2pregular";
     score.highscores.slice().reverse().forEach((highscore, idx) => {
