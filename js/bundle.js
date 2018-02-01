@@ -14243,7 +14243,7 @@ class Game {
     this.gameOver = false;
 
     if (this.map) {
-      this.reset_objects();
+      this.resetGame();
     } else {
       this.buildGame();
     }
@@ -14317,8 +14317,7 @@ class Game {
     this.water.render();
     if (this.paused) {
       Object(__WEBPACK_IMPORTED_MODULE_6__display__["b" /* displayPauseScreen */])(this.context, this.BOARD_DIM);
-    }
-    if (this.gameOver) {
+    } else if (this.gameOver) {
       Object(__WEBPACK_IMPORTED_MODULE_6__display__["a" /* displayGameOver */])(this.context, this.score, this.BOARD_DIM);
     } else {
       Object(__WEBPACK_IMPORTED_MODULE_6__display__["c" /* displayScore */])(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);

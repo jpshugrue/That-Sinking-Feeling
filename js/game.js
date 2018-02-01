@@ -38,7 +38,7 @@ class Game {
     this.gameOver = false;
 
     if (this.map) {
-      this.reset_objects();
+      this.resetGame();
     } else {
       this.buildGame();
     }
@@ -112,8 +112,7 @@ class Game {
     this.water.render();
     if (this.paused) {
       displayPauseScreen(this.context, this.BOARD_DIM);
-    }
-    if (this.gameOver) {
+    } else if (this.gameOver) {
       displayGameOver(this.context, this.score, this.BOARD_DIM);
     } else {
       displayScore(this.context, this.score, this.TILE_SIZE, this.BOARD_DIM);
