@@ -14243,18 +14243,9 @@ class Game {
     this.gameOver = false;
 
     if (this.map) {
-      this.map.reset();
-      this.player.reset([330,500]);
-      this.background.reset();
-      this.water.reset();
-      this.score.reset();
+      this.reset_objects();
     } else {
-      this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
-      this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-      this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,500], this.TILE_SIZE);
-      this.background = new __WEBPACK_IMPORTED_MODULE_3__background__["a" /* default */](this.context, this.BOARD_DIM);
-      this.water = new __WEBPACK_IMPORTED_MODULE_2__water__["a" /* default */](this.TILE_SIZE, this.BOARD_DIM, this.context);
-      this.score = new __WEBPACK_IMPORTED_MODULE_4__score__["a" /* default */]();
+      this.buildGame();
     }
     this.now = Date.now();
     this.main();
@@ -14411,6 +14402,23 @@ class Game {
     return [row + 1, column];
   }
 
+  buildGame() {
+    this.map = new __WEBPACK_IMPORTED_MODULE_1__map__["a" /* default */](this.BOARD_DIM, this.TILE_SIZE, this.context);
+    this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
+    this.player = new __WEBPACK_IMPORTED_MODULE_0__player__["a" /* default */]([330,500], this.TILE_SIZE);
+    this.background = new __WEBPACK_IMPORTED_MODULE_3__background__["a" /* default */](this.context, this.BOARD_DIM);
+    this.water = new __WEBPACK_IMPORTED_MODULE_2__water__["a" /* default */](this.TILE_SIZE, this.BOARD_DIM, this.context);
+    this.score = new __WEBPACK_IMPORTED_MODULE_4__score__["a" /* default */]();
+  }
+
+  resetGame() {
+    this.map.reset();
+    this.player.reset([330,500]);
+    this.background.reset();
+    this.water.reset();
+    this.score.reset();
+  }
+
   keyPress(event, pressed) {
     this.keyDown = pressed ? true : false;
     switch(event.key) {
@@ -14449,15 +14457,8 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        // if (this.splashScreen) {
-        //   this.now = Date.now();
-        //   this.splashScreen = false;
-        // } else
         if (this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
-        // }
-        // else if (this.gameOver && !this.score.checkIfHighScore()) {
-        //   this.newGame();
         } else if (!this.gameOver){
           this.player.jump = pressed;
         }

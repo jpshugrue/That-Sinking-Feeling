@@ -38,18 +38,9 @@ class Game {
     this.gameOver = false;
 
     if (this.map) {
-      this.map.reset();
-      this.player.reset([330,500]);
-      this.background.reset();
-      this.water.reset();
-      this.score.reset();
+      this.reset_objects();
     } else {
-      this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
-      this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
-      this.player = new Player([330,500], this.TILE_SIZE);
-      this.background = new Background(this.context, this.BOARD_DIM);
-      this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
-      this.score = new Score();
+      this.buildGame();
     }
     this.now = Date.now();
     this.main();
@@ -206,6 +197,23 @@ class Game {
     return [row + 1, column];
   }
 
+  buildGame() {
+    this.map = new Map(this.BOARD_DIM, this.TILE_SIZE, this.context);
+    this.map.generateMap(this.BOARD_DIM, this.TILE_SIZE);
+    this.player = new Player([330,500], this.TILE_SIZE);
+    this.background = new Background(this.context, this.BOARD_DIM);
+    this.water = new Water(this.TILE_SIZE, this.BOARD_DIM, this.context);
+    this.score = new Score();
+  }
+
+  resetGame() {
+    this.map.reset();
+    this.player.reset([330,500]);
+    this.background.reset();
+    this.water.reset();
+    this.score.reset();
+  }
+
   keyPress(event, pressed) {
     this.keyDown = pressed ? true : false;
     switch(event.key) {
@@ -244,15 +252,8 @@ class Game {
         break;
       case " ":
         event.preventDefault();
-        // if (this.splashScreen) {
-        //   this.now = Date.now();
-        //   this.splashScreen = false;
-        // } else
         if (this.gameOver && this.score.checkIfHighScore() && this.keyDown) {
           this.score.name += " ";
-        // }
-        // else if (this.gameOver && !this.score.checkIfHighScore()) {
-        //   this.newGame();
         } else if (!this.gameOver){
           this.player.jump = pressed;
         }
