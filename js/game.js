@@ -11,10 +11,10 @@ class Game {
   constructor() {
     this.TILE_SIZE = 16;
     this.BOARD_DIM = 608;
-    this.MAX_HORIZONTAL_VEL = 22;
+    this.MAX_HORIZONTAL_VEL = 5;
     this.MAX_JUMP_VEL = -8;
     this.MAX_FALL_VEL = 32;
-    this.FRICTION = 16;
+    this.FRICTION = 1;
     this.GRAVITY = 16;
     this.FRAME = 1/60;
 
@@ -70,12 +70,12 @@ class Game {
     this.score.currentScore += timeDiff * 10;
     if (player.left) {
       if (player.xVel > 0 ) { player.xVel = 0; }
-      player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff));
+      player.xVel = (player.xVel - (this.MAX_HORIZONTAL_VEL * timeDiff * 2));
       if (Math.abs(player.xVel) > this.MAX_HORIZONTAL_VEL) { player.xVel = -(this.MAX_HORIZONTAL_VEL); }
     }
     if (player.right) {
       if (player.xVel < 0 ) { player.xVel = 0; }
-      player.xVel = (player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff));
+      player.xVel = (player.xVel + (this.MAX_HORIZONTAL_VEL * timeDiff * 2));
       if (player.xVel > this.MAX_HORIZONTAL_VEL) { player.xVel = this.MAX_HORIZONTAL_VEL; }
     }
     if (player.jump) {
