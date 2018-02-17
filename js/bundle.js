@@ -15059,6 +15059,9 @@ class Score {
     if (this.highscores.length >= 10) {
       this.database.ref('highscores/' + this.highscores[0].date).remove();
     }
+    if (this.name.length > 35) {
+      this.name = this.name.slice(0, 35);
+    }
     this.database.ref('highscores/' + dateTime).set({
       score: this.currentScore,
       date: dateTime,
